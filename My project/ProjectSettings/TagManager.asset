@@ -6,8 +6,6 @@ TagManager:
   tags:
   - Target
   - Wall
-  - AxeZomb
-  - Waypoints
   layers:
   - Default
   - TransparentFX
