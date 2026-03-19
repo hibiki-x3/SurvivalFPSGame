@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 464c5e14e7d425643b039768defefe89
+timeCreated: 1471944184
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 127325
+  packageName: Particle Pack
+  packageVersion: 3.1
+  assetPath: Assets/EffectExamples/FireExplosionEffects/Materials/SmokeDark.mat
+  uploadId: 691001
