@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 public class Weapon : MonoBehaviour
 {
+    public int weaponDamage;
 
     //Shooting
     public bool isShooting, readyToShoot;
@@ -114,6 +115,11 @@ public class Weapon : MonoBehaviour
 
         //Instantiate the bullet
         GameObject bullet = Instantiate(bulletPrefab, bulletSpawn.position, Quaternion.identity);
+
+        // Set the bullet's damage
+        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        bulletScript.bulletDamage = weaponDamage;
+
         //Pointing the bullet forward
         bullet.transform.forward = shootingDirection;
         //Shoot the bullet

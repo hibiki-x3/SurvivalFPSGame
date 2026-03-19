@@ -10,17 +10,31 @@ public class AxeZomb_Running_State : StateMachineBehaviour
     public float stopRunningRange = 21;
     public float attackRange = 2.5f;
 
+    private bool CanNavigate()
+    {
+        return agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
+    }
+
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         agent = animator.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        player = playerObject != null ? playerObject.transform : null;
 
-        agent.speed = runningSpeed;
+        if (agent != null)
+        {
+            agent.speed = runningSpeed;
+        }
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-       agent.SetDestination(player.position);
+        if (player == null || !CanNavigate())
+        {
+            return;
+        }
+
+        agent.SetDestination(player.position);
 
         float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
 
@@ -37,7 +51,10 @@ public class AxeZomb_Running_State : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-       agent.SetDestination(agent.transform.position);
+         if (CanNavigate())
+         {
+                agent.SetDestination(agent.transform.position);
+         }
     }
 
     override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

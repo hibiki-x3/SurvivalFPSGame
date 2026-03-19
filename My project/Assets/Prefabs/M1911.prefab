@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2c65930bc7e4b5418aa64718d262b4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Weapon
-  playerCamera: {fileID: 0}
+  weaponDamage: 20
   isShooting: 0
   readyToShoot: 0
   shootingDelay: 0.5
@@ -269,6 +269,11 @@ MonoBehaviour:
   bulletSpawn: {fileID: 1394355055877388003}
   bulletVelocity: 500
   bulletPrefabLifeTime: 3
+  muzzleEffect: {fileID: 0}
+  reloadTime: 0
+  magazineSize: 0
+  bulletsLeft: 0
+  isReloading: 0
   currentShootingMode: 0
 --- !u!1 &4494210503766977443
 GameObject:

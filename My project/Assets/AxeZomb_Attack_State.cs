@@ -17,14 +17,17 @@ public class AxeZomb_Attack_State : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // Cache Player transform and get NavMeshAgent component.
         player = GameObject.FindGameObjectWithTag("Player").transform;
         agent = animator.GetComponent<NavMeshAgent>();
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-       LookAtPlayer(animator);
+        // Face the player using smooth manual rotation.
+        LookAtPlayer(animator);
 
+        // Check distance and exit attack if player moved beyond range.
         float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
 
         if (distanceFromPlayer > attackRange)

@@ -4,8 +4,20 @@ using System.Collections.Generic;
 
 public class Bullet : MonoBehaviour
 {
+    public int bulletDamage;
+
     private void OnCollisionEnter(Collision objectWeHit)
     {
+        AxeZomb zombie = objectWeHit.gameObject.GetComponentInParent<AxeZomb>();
+        if (zombie != null)
+        {
+            print("hit a zombie");
+            CreateBulletImpactEffect(objectWeHit);
+            zombie.TakeDamage(bulletDamage);
+            Destroy(gameObject);
+            return;
+        }
+
         if (objectWeHit.gameObject.CompareTag("Target"))
         {
             print("hit " + objectWeHit.gameObject.name + " !");
