@@ -7,7 +7,6 @@ public class AxeZomb_Running_State : StateMachineBehaviour
     Transform player;
 
     public float runningSpeed = 6f;
-    public float stopRunningRange = 21;
     public float attackRange = 2.5f;
 
     private bool CanNavigate()
@@ -15,11 +14,24 @@ public class AxeZomb_Running_State : StateMachineBehaviour
         return agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh;
     }
 
+    private bool TryCachePlayer()
+    {
+        if (player != null)
+        {
+            return true;
+        }
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        player = playerObject != null ? playerObject.transform : null;
+        return player != null;
+    }
+
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         agent = animator.GetComponent<UnityEngine.AI.NavMeshAgent>();
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-        player = playerObject != null ? playerObject.transform : null;
+        TryCachePlayer();
+
+        animator.SetBool("isRunning", true);
 
         if (agent != null)
         {
@@ -29,7 +41,7 @@ public class AxeZomb_Running_State : StateMachineBehaviour
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (player == null || !CanNavigate())
+        if (!TryCachePlayer() || !CanNavigate())
         {
             return;
         }
@@ -38,12 +50,7 @@ public class AxeZomb_Running_State : StateMachineBehaviour
 
         float distanceFromPlayer = Vector3.Distance(player.position, animator.transform.position);
 
-        if (distanceFromPlayer > stopRunningRange)
-        {
-            animator.SetBool("isRunning", false);
-            animator.SetBool("isWalking", true);
-        }
-        else if (distanceFromPlayer <= attackRange)
+        if (distanceFromPlayer <= attackRange)
         {
             animator.SetBool("isAttacking", true);
         }

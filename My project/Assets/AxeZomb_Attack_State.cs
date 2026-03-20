@@ -8,6 +8,18 @@ public class AxeZomb_Attack_State : StateMachineBehaviour
 
     public float attackRange = 2.5f;
 
+    private bool TryCachePlayer()
+    {
+        if (player != null)
+        {
+            return true;
+        }
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        player = playerObject != null ? playerObject.transform : null;
+        return player != null;
+    }
+
     private void LookAtPlayer(Animator animator)
     {
         Vector3 direction = (player.position - animator.transform.position).normalized;
@@ -17,13 +29,18 @@ public class AxeZomb_Attack_State : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Cache Player transform and get NavMeshAgent component.
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        // Cache references. Player may not exist yet, so keep retrying in update.
+        TryCachePlayer();
         agent = animator.GetComponent<NavMeshAgent>();
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (!TryCachePlayer())
+        {
+            return;
+        }
+
         // Face the player using smooth manual rotation.
         LookAtPlayer(animator);
 
@@ -33,6 +50,7 @@ public class AxeZomb_Attack_State : StateMachineBehaviour
         if (distanceFromPlayer > attackRange)
         {
             animator.SetBool("isAttacking", false);
+            animator.SetBool("isRunning", true);
         }
     }
 
