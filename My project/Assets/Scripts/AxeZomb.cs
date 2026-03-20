@@ -10,6 +10,7 @@ public class AxeZomb : MonoBehaviour
     private NavMeshAgent navAgent;
     private GameObject player;
     private CapsuleCollider zombieCollider;
+    private ScoreManager scoreManager;
     private bool isDead;
 
     private void Start()
@@ -19,6 +20,7 @@ public class AxeZomb : MonoBehaviour
         animator = GetComponent<Animator>();
         navAgent = GetComponent<NavMeshAgent>();
         zombieCollider = GetComponent<CapsuleCollider>();
+        scoreManager = FindObjectOfType<ScoreManager>();
         navAgent.speed = speed;
     }
 
@@ -48,6 +50,8 @@ public class AxeZomb : MonoBehaviour
             navAgent.isStopped = true;
             navAgent.enabled = false;
             zombieCollider.enabled = false;
+
+            scoreManager?.AddScore(10);
 
             // Destroy the zombie after a delay to allow the death animation to play
             Destroy(gameObject, destroyAfterDeathDelay);
