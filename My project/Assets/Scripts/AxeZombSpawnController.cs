@@ -54,7 +54,7 @@ public class AxeZombSpawnController : MonoBehaviour
         inCooldown = false;
 
         currentWave++;
-        currentAxeZombPerWave = AxeZombPerWave + (currentWave - 1) * 2; // Increase zombies per wave
+        currentAxeZombPerWave = AxeZombPerWave + (currentWave - 3) * 2; // Increase zombies per wave
         yield return StartCoroutine(SpawnAxeZombs());
 
         isSpawningWave = false;
@@ -64,7 +64,8 @@ public class AxeZombSpawnController : MonoBehaviour
     {
         if (axeZombPrefab == null)
         {
-            Debug.LogError("AxeZombSpawnController: Missing axeZombPrefab reference.");
+            Debug.LogError("AxeZombSpawnController: Missing axeZombPrefab reference on " + gameObject.name + ". Assign the prefab in the Inspector.");
+            enabled = false;
             yield break;
         }
 
@@ -79,7 +80,7 @@ public class AxeZombSpawnController : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("AxeZombSpawnController: Spawned prefab has no Enemy component.");
+                Debug.LogWarning("AxeZombSpawnController: Spawned prefab has no AxeZomb component.");
             }
 
             yield return new WaitForSeconds(delayBetweenZombSpawn);
