@@ -6,70 +6,51 @@ public class AxeZombSpawnController : MonoBehaviour
 {
     [SerializeField] private GameObject axeZombPrefab;
 
-    public int AxeZombPerWave = 5;
-    public int currentAxeZombPerWave;
+    public int axeZombPerSpawn = 1;
+    public int currentAxeZombPerSpawn;
 
-    public float delayBetweenZombSpawn = 1f; // Delay between spawning each zombie in a wave
+    public float delayBetweenZombSpawn = 1f; // Delay between spawning each zombie in one spawn cycle
 
-    public int currentWave = 0;
-    public float waveDelay = 5f; // Delay between waves
+    public float spawnInterval = 5f; // Spawn zombies every X seconds
+    public float spawnCountIncreaseInterval = 60f; // Increase zombies per spawn every X seconds
+    public int spawnCountIncreaseAmount = 1;
 
-    public bool inCooldown;
-    public float cooldownTimer = 0f;
+    public float spawnTimer = 0f;
+    public float spawnCountIncreaseTimer = 0f;
 
     public List<AxeZomb> currentAxeZombAlive; 
 
-    private bool isSpawningWave;
+    private bool isSpawning;
 
     private void Start()
     {
-        currentAxeZombPerWave = AxeZombPerWave;
+        currentAxeZombPerSpawn = Mathf.Max(1, axeZombPerSpawn);
         currentAxeZombAlive = new List<AxeZomb>();
     }
 
-    private void StartNextWave()
+    private void TryStartSpawnCycle()
     {
-        if (isSpawningWave)
+        if (isSpawning)
         {
             return;
         }
 
-        StartCoroutine(StartNextWaveRoutine());
+        StartCoroutine(SpawnAxeZombsRoutine());
     }
 
-    private IEnumerator StartNextWaveRoutine()
+    private IEnumerator SpawnAxeZombsRoutine()
     {
-        isSpawningWave = true;
+        isSpawning = true;
 
-        // Wait between waves to give players breathing room.
-        inCooldown = true;
-        cooldownTimer = 0f;
-
-        while (cooldownTimer < waveDelay)
-        {
-            cooldownTimer += Time.deltaTime;
-            yield return null;
-        }
-
-        inCooldown = false;
-
-        currentWave++;
-        currentAxeZombPerWave = AxeZombPerWave + (currentWave - 3) * 2; // Increase zombies per wave
-        yield return StartCoroutine(SpawnAxeZombs());
-
-        isSpawningWave = false;
-    }
-
-    private IEnumerator SpawnAxeZombs()
-    {
         if (axeZombPrefab == null)
         {
             Debug.LogError("AxeZombSpawnController: Missing axeZombPrefab reference on " + gameObject.name + ". Assign the prefab in the Inspector.");
             enabled = false;
+            isSpawning = false;
             yield break;
         }
 
-        for (int i = 0; i < currentAxeZombPerWave; i++)
+        for (int i = 0; i < currentAxeZombPerSpawn; i++)
         {
             // Instantiate a new AxeZomb at the spawner's position
             GameObject newAxeZomb = Instantiate(axeZombPrefab, transform.position, Quaternion.identity);
@@ -85,16 +66,28 @@ public class AxeZombSpawnController : MonoBehaviour
 
             yield return new WaitForSeconds(delayBetweenZombSpawn);
         }
+
+        isSpawning = false;
     }
 
     private void Update()
     {
-        // Remove destroyed enemies so wave progression can continue.
+        // Remove destroyed enemies so tracking reflects what's currently alive.
         currentAxeZombAlive.RemoveAll(enemy => enemy == null);
 
-        if (!inCooldown && !isSpawningWave && currentAxeZombAlive.Count == 0)
+        spawnTimer += Time.deltaTime;
+        spawnCountIncreaseTimer += Time.deltaTime;
+
+        if (spawnCountIncreaseTimer >= spawnCountIncreaseInterval)
         {
-            StartNextWave();
+            currentAxeZombPerSpawn += Mathf.Max(1, spawnCountIncreaseAmount);
+            spawnCountIncreaseTimer -= spawnCountIncreaseInterval;
+        }
+
+        if (spawnTimer >= spawnInterval)
+        {
+            spawnTimer -= spawnInterval;
+            TryStartSpawnCycle();
         }
     }
 }
