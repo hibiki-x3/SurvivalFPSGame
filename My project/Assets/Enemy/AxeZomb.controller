@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Standing React Large From Right
+  m_Name: Hit
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
@@ -40,7 +40,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   runningSpeed: 10
-  stopRunningRange: 30
   attackRange: 8
 --- !u!1101 &-4614709492493164305
 AnimatorStateTransition:
@@ -139,7 +138,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Falling Forward Death
+  m_Name: Death1
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -307,7 +306,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Falling Back Death
+  m_Name: Death2
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
