@@ -8,6 +8,8 @@ public class Weapon : MonoBehaviour
 {
     public int weaponDamage;
 
+    public bool isActiveWeapon;
+
     //Shooting
     public bool isShooting, readyToShoot;
     bool allowReset = true;
@@ -27,16 +29,29 @@ public class Weapon : MonoBehaviour
     public float bulletVelocity = 30;
     public float bulletPrefabLifeTime = 3f;
 
-    //Muzzle Effect
+    //Muzzle Effect and weapon animations
     public GameObject muzzleEffect;
-    private Animator animator;
+    public Animator animator;
 
     //Reloading
     public float reloadTime;
     public int magazineSize, bulletsLeft;
     public bool isReloading;
 
+    //Keeps the gun facing the right way and fixes weapon scaling after pick up
+    public Vector3 spawnPosition;
+    public Vector3 spawnRotation;
+    public Vector3 spawnScale;
 
+
+
+    public enum WeaponModel
+    {
+        PistolM1911,
+        M16
+    }
+
+    public WeaponModel thisWeaponModel;
 
     public enum ShootingMode
     {
@@ -60,44 +75,46 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(bulletsLeft == 0 && isShooting)
-        {
-            SoundManager.Instance.emptyMagazineSoundM1911.Play();
-        }
+        if(isActiveWeapon){
+            //Empty magazine sound
+            if(bulletsLeft == 0 && isShooting)
+            {
+                SoundManager.Instance.emptyMagazineSoundM1911.Play();
+            }
 
-        if(currentShootingMode == ShootingMode.Auto)
-        {
-            //Holding down left click
-            isShooting = Input.GetKey(KeyCode.Mouse0);
-        }
-        else if(currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
-        {
-            //Clicking left click
-            isShooting = Input.GetKeyDown(KeyCode.Mouse0);
-        }
+            if(currentShootingMode == ShootingMode.Auto)
+            {
+                //Holding down left click
+                isShooting = Input.GetKey(KeyCode.Mouse0);
+            }
+            else if(currentShootingMode == ShootingMode.Single || currentShootingMode == ShootingMode.Burst)
+            {
+                //Clicking left click
+                isShooting = Input.GetKeyDown(KeyCode.Mouse0);
+            }
 
-        if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isReloading == false)
-        {
-            Reload();
+            if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isReloading == false)
+            {
+                Reload();
+            }
+
+            //auto reload when empty
+            //if(readyToShoot && isShooting == false && isReloading == false && bulletsLeft <= 0)
+            //{
+            //    Reload();
+            //}
+
+            if(readyToShoot && isShooting && bulletsLeft > 0)
+            {
+                burstBulletsLeft = bulletsPerBurst;
+                FireWeapon();
+            }
+
+            if(AmmoManager.Instance.ammoDisplay != null)
+            {
+                AmmoManager.Instance.ammoDisplay.text = $"{bulletsLeft/bulletsPerBurst}/{magazineSize/bulletsPerBurst}";
+            }
         }
-
-        //auto reload when empty
-        //if(readyToShoot && isShooting == false && isReloading == false && bulletsLeft <= 0)
-        //{
-        //    Reload();
-        //}
-
-        if(readyToShoot && isShooting && bulletsLeft > 0)
-        {
-            burstBulletsLeft = bulletsPerBurst;
-            FireWeapon();
-        }
-
-        if(AmmoManager.Instance.ammoDisplay != null)
-        {
-            AmmoManager.Instance.ammoDisplay.text = $"{bulletsLeft/bulletsPerBurst}/{magazineSize/bulletsPerBurst}";
-        }
-
     }
 
     private void FireWeapon()
@@ -107,7 +124,7 @@ public class Weapon : MonoBehaviour
         muzzleEffect.GetComponent<ParticleSystem>().Play();
         animator.SetTrigger("RECOIL");
 
-        SoundManager.Instance.shootingSoundM1911.Play();
+        SoundManager.Instance.PlayShootingSound(thisWeaponModel);
 
         readyToShoot = false;
 
@@ -144,8 +161,10 @@ public class Weapon : MonoBehaviour
 
     private void Reload()
     {
-        SoundManager.Instance.reloadingSoundM1911.Play();
+        SoundManager.Instance.PlayReloadSound(thisWeaponModel);
         
+        animator.SetTrigger("RELOAD");
+
         isReloading = true;
         Invoke("ReloadCompleted", reloadTime);
     }
