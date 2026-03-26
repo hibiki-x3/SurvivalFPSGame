@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using NUnit.Framework;
+using System;
 
 public class Weapon : MonoBehaviour
 {
@@ -93,7 +94,8 @@ public class Weapon : MonoBehaviour
                 isShooting = Input.GetKeyDown(KeyCode.Mouse0);
             }
 
-            if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isReloading == false)
+            //Reloading
+            if(Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && isReloading == false && WeaponManager.Instance.CheckAmmoLeftFor(thisWeaponModel) > 0)
             {
                 Reload();
             }
@@ -110,12 +112,9 @@ public class Weapon : MonoBehaviour
                 FireWeapon();
             }
 
-            if(AmmoManager.Instance.ammoDisplay != null)
-            {
-                AmmoManager.Instance.ammoDisplay.text = $"{bulletsLeft/bulletsPerBurst}/{magazineSize/bulletsPerBurst}";
-            }
         }
     }
+
 
     private void FireWeapon()
     {
@@ -169,9 +168,19 @@ public class Weapon : MonoBehaviour
         Invoke("ReloadCompleted", reloadTime);
     }
 
+
+
+
     private void ReloadCompleted()
     {
-        bulletsLeft = magazineSize;
+        int bulletsNeeded = magazineSize - bulletsLeft;
+        int availableAmmo = WeaponManager.Instance.CheckAmmoLeftFor(thisWeaponModel);
+        int bulletsToReload = Math.Min(bulletsNeeded, availableAmmo);
+
+        bulletsLeft += bulletsToReload;
+
+        WeaponManager.Instance.DecreaseTotalAmmo(bulletsToReload, thisWeaponModel);
+
         isReloading = false;
     }
 
