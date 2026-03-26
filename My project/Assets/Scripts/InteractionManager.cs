@@ -1,6 +1,3 @@
-using Unity.VisualScripting;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractionManager : MonoBehaviour
@@ -9,6 +6,9 @@ public class InteractionManager : MonoBehaviour
     public static InteractionManager Instance{ get; set; }
 
     public Weapon hoveredWeapon = null;
+    public AmmoBox hoveredAmmoBox = null;
+
+    public float interactionRange = 5.0f;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class InteractionManager : MonoBehaviour
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
-        if(Physics.Raycast(ray, out hit))
+        if(Physics.Raycast(ray, out hit, interactionRange))
         {
             GameObject objectHitByRaycast = hit.transform.gameObject;
 
@@ -46,6 +46,26 @@ public class InteractionManager : MonoBehaviour
                 if (hoveredWeapon)
                 {
                     hoveredWeapon.GetComponent<Outline>().enabled = false;
+                }
+            }
+
+            //AmmoBox
+            if (objectHitByRaycast.GetComponent<AmmoBox>())
+            {
+                hoveredAmmoBox = objectHitByRaycast.gameObject.GetComponent<AmmoBox>();
+                hoveredAmmoBox.GetComponent<Outline>().enabled = true;
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    WeaponManager.Instance.PickupAmmo(hoveredAmmoBox);
+                    //Destroy the ammo box after picking it up
+                    Destroy(objectHitByRaycast.gameObject);
+                }
+            }
+            else
+            {
+                if (hoveredAmmoBox)
+                {
+                    hoveredAmmoBox.GetComponent<Outline>().enabled = false;
                 }
             }
         }
