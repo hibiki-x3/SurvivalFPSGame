@@ -23,7 +23,13 @@ public class HUDManager : MonoBehaviour
     public Image tacticalUI;
     public TextMeshProUGUI tacticalAmountUI;
 
+    [Header("Score")]
+    public TextMeshProUGUI scoreTMPText;
+    public Text scoreLegacyText;
+
     public Sprite emptySlot;
+
+    public int Score { get; private set; }
 
     private void Awake()
     {
@@ -34,6 +40,29 @@ public class HUDManager : MonoBehaviour
         else
         {
             Instance = this;
+        }
+
+        UpdateScoreText();
+    }
+
+    public void AddScore(int points)
+    {
+        Score += points;
+        UpdateScoreText();
+    }
+
+    private void UpdateScoreText()
+    {
+        string scoreLabel = "Score: " + Score.ToString();
+
+        if (scoreTMPText != null)
+        {
+            scoreTMPText.text = scoreLabel;
+        }
+
+        if (scoreLegacyText != null)
+        {
+            scoreLegacyText.text = scoreLabel;
         }
     }
 
