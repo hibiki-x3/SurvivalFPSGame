@@ -15,6 +15,9 @@ public class SoundManager : MonoBehaviour
     public AudioClip M1911Reload;
     public AudioClip M16Reload;
 
+    public AudioClip AxeZombHit;
+    [Range(0f, 2f)] public float AxeZombHitVolume = 1.75f;
+
     public AudioSource emptyMagazineSoundM1911;
 
     private void Awake()
@@ -53,6 +56,16 @@ public class SoundManager : MonoBehaviour
                 ReloadingChannel.PlayOneShot(M16Reload);
                 break;
         }
+    }
+
+    public void PlayAxeZombHitSound()
+    {
+        if (AxeZombHit == null || ShootingChannel == null)
+        {
+            return;
+        }
+
+        ShootingChannel.PlayOneShot(AxeZombHit, AxeZombHitVolume);
     }
 
 }

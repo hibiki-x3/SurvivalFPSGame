@@ -3080,6 +3080,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalReferences
   bulletImpactEffectPrefab: {fileID: 8151064199544456451, guid: 91185fac8a891244dab19429c343ebda, type: 3}
+  bloodEffectPrefab: {fileID: 3889168853336657509}
 --- !u!4 &707024056
 Transform:
   m_ObjectHideFlags: 0
@@ -3874,6 +3875,8 @@ MonoBehaviour:
   M16Shot: {fileID: 8300000, guid: 7e094d42ab54bb346aa76c1fa0c09d6a, type: 3}
   M1911Reload: {fileID: 8300000, guid: 8ec17f22c22c4424699ffcd5c7687245, type: 3}
   M16Reload: {fileID: 8300000, guid: 02239e4da82669e4fbda90d932b81038, type: 3}
+  AxeZombHit: {fileID: 8300000, guid: 36104c8b981b4a349a1948b61c9e8a20, type: 3}
+  AxeZombHitVolume: 1.25
   emptyMagazineSoundM1911: {fileID: 948379334}
 --- !u!4 &948379336
 Transform:
@@ -18742,6 +18745,100 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &3889168853336657509 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5145568352686716319, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+  m_PrefabInstance: {fileID: 7492592679273684271}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7492592679273684271
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3422443088946863538, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422443088946863538, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: lengthInSec
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422443088946863538, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 3422443088946863538, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3799132314027889846, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3799132314027889846, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3799132314027889846, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4123875706124939822, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.57812
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.19749
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.16059
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4209842704098122341, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5145568352686716319, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
+      propertyPath: m_Name
+      value: BloodSprayFX
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f6642c64fa86ee84baefa5beabc6edba, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -18769,3 +18866,4 @@ SceneRoots:
   - {fileID: 477020865}
   - {fileID: 28592783}
   - {fileID: 2002257056}
+  - {fileID: 7492592679273684271}

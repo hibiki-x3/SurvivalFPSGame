@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Bullet : MonoBehaviour
 {
     public int bulletDamage;
+    [SerializeField] private float zombieBloodEffectScale = 0.2f;
 
     private void OnCollisionEnter(Collision objectWeHit)
     {
@@ -12,7 +13,8 @@ public class Bullet : MonoBehaviour
         if (zombie != null)
         {
             print("hit a zombie");
-            CreateBulletImpactEffect(objectWeHit);
+            SoundManager.Instance?.PlayAxeZombHitSound();
+            CreateBloodEffect(objectWeHit);
             zombie.TakeDamage(bulletDamage);
             Destroy(gameObject);
             return;
@@ -32,7 +34,20 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    void CreateBloodEffect(Collision objectWeHit)
+    {
+        ContactPoint contact = objectWeHit.contacts[0];
 
+        GameObject blood = Instantiate(
+            GlobalReferences.Instance.bloodEffectPrefab,
+            contact.point,
+            Quaternion.LookRotation(contact.normal)
+        );
+
+        // Keep blood effect subtle for zombie hits.
+        blood.transform.localScale *= zombieBloodEffectScale;
+        blood.transform.SetParent(objectWeHit.gameObject.transform);
+    }
     void CreateBulletImpactEffect(Collision objectWeHit)
     {
         ContactPoint contact = objectWeHit.contacts[0];
