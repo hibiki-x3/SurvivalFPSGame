@@ -96,6 +96,8 @@ public class WeaponManager : MonoBehaviour
             weaponToDrop.transform.SetParent(pickedupWeapon.transform.parent);
             weaponToDrop.transform.localPosition = pickedupWeapon.transform.localPosition;
             weaponToDrop.transform.localRotation = pickedupWeapon.transform.localRotation;
+            weaponToDrop.transform.localScale = pickedupWeapon.transform.localScale;
+
         }
     }
 
