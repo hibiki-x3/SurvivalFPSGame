@@ -4,6 +4,14 @@ using System.Collections.Generic;
 
 public class AxeZombSpawnController : MonoBehaviour
 {
+    [System.Serializable]
+    public struct SpawnCycleState
+    {
+        public int currentPerSpawn;
+        public float spawnTimer;
+        public float spawnIncreaseTimer;
+    }
+
     [SerializeField] private GameObject axeZombPrefab;
 
     public int axeZombPerSpawn = 1;
@@ -21,11 +29,67 @@ public class AxeZombSpawnController : MonoBehaviour
     public List<AxeZomb> currentAxeZombAlive; 
 
     private bool isSpawning;
+    private bool hasInitialized;
+
+    private bool hasDeferredRestore;
+    private SpawnCycleState deferredState;
 
     private void Start()
     {
         currentAxeZombPerSpawn = Mathf.Max(1, axeZombPerSpawn);
         currentAxeZombAlive = new List<AxeZomb>();
+        hasInitialized = true;
+
+        if (hasDeferredRestore)
+        {
+            ApplySpawnCycleStateInternal(deferredState);
+            hasDeferredRestore = false;
+        }
+    }
+
+    public SpawnCycleState GetSpawnCycleState()
+    {
+        return new SpawnCycleState
+        {
+            currentPerSpawn = Mathf.Max(1, currentAxeZombPerSpawn),
+            spawnTimer = Mathf.Max(0f, spawnTimer),
+            spawnIncreaseTimer = Mathf.Max(0f, spawnCountIncreaseTimer)
+        };
+    }
+
+    public void SetSpawnCycleState(SpawnCycleState state)
+    {
+        if (!hasInitialized)
+        {
+            deferredState = state;
+            hasDeferredRestore = true;
+            return;
+        }
+
+        ApplySpawnCycleStateInternal(state);
+    }
+
+    private void ApplySpawnCycleStateInternal(SpawnCycleState state)
+    {
+        currentAxeZombPerSpawn = Mathf.Max(1, state.currentPerSpawn);
+
+        if (spawnInterval > 0f)
+        {
+            spawnTimer = Mathf.Clamp(state.spawnTimer, 0f, spawnInterval);
+        }
+        else
+        {
+            spawnTimer = Mathf.Max(0f, state.spawnTimer);
+        }
+
+        if (spawnCountIncreaseInterval > 0f)
+        {
+            spawnCountIncreaseTimer = Mathf.Clamp(state.spawnIncreaseTimer, 0f, spawnCountIncreaseInterval);
+        }
+        else
+        {
+            spawnCountIncreaseTimer = Mathf.Max(0f, state.spawnIncreaseTimer);
+        }
     }
 
     private void TryStartSpawnCycle()

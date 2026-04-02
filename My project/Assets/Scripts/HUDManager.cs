@@ -51,6 +51,12 @@ public class HUDManager : MonoBehaviour
         UpdateScoreText();
     }
 
+    public void SetScore(int score)
+    {
+        Score = Mathf.Max(0, score);
+        UpdateScoreText();
+    }
+
     private void UpdateScoreText()
     {
         string scoreLabel = "Score: " + Score.ToString();
