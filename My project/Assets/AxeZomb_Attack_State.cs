@@ -41,6 +41,12 @@ public class AxeZomb_Attack_State : StateMachineBehaviour
             return;
         }
 
+        AxeZomb zombie = animator.GetComponent<AxeZomb>();
+        if (zombie != null)
+        {
+            zombie.TryAttackPlayer();
+        }
+
         // Face the player using smooth manual rotation.
         LookAtPlayer(animator);
 

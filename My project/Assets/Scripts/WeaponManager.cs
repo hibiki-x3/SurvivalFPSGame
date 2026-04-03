@@ -105,6 +105,7 @@ public class WeaponManager : MonoBehaviour
         pickedupWeapon.transform.SetParent(activeWeaponSlot.transform, false);
 
         Weapon weapon = pickedupWeapon.GetComponent<Weapon>();
+        DisableOutlineRecursively(pickedupWeapon);
 
         pickedupWeapon.transform.localPosition = new Vector3(weapon.spawnPosition.x, weapon.spawnPosition.y, weapon.spawnPosition.z);
         pickedupWeapon.transform.localRotation = Quaternion.Euler(weapon.spawnRotation.x, weapon.spawnRotation.y, weapon.spawnRotation.z);
@@ -123,6 +124,7 @@ public class WeaponManager : MonoBehaviour
             
             weaponToDrop.GetComponent<Weapon>().isActiveWeapon = false;
             weaponToDrop.GetComponent<Weapon>().animator.enabled = false;
+            DisableOutlineRecursively(weaponToDrop);
 
             weaponToDrop.transform.SetParent(pickedupWeapon.transform.parent);
             weaponToDrop.transform.localPosition = pickedupWeapon.transform.localPosition;
@@ -152,7 +154,9 @@ public class WeaponManager : MonoBehaviour
 
     internal void PickupAmmo(AmmoBox ammo)
     {
-        switch (ammo.ammoType)
+        AmmoBox.AmmoType effectiveAmmoType = ammo.GetEffectiveAmmoType();
+
+        switch (effectiveAmmoType)
         {
             case AmmoBox.AmmoType.PistolAmmo:
                 totalPistolAmmo += ammo.ammoAmount;
@@ -169,6 +173,34 @@ public class WeaponManager : MonoBehaviour
                 totalMachineGunAmmo += ammo.ammoAmount;
                 break;
         }
+
+        TryAutoReloadActiveWeapon();
+    }
+
+    private void TryAutoReloadActiveWeapon()
+    {
+        if (activeWeaponSlot == null)
+        {
+            return;
+        }
+
+        Weapon activeWeapon = activeWeaponSlot.GetComponentInChildren<Weapon>();
+        if (activeWeapon == null || activeWeapon.isReloading)
+        {
+            return;
+        }
+
+        int ammoLeft = CheckAmmoLeftFor(activeWeapon.thisWeaponModel);
+        if (activeWeapon.bulletsLeft > 0 || ammoLeft <= 0)
+        {
+            return;
+        }
+
+        int bulletsNeeded = Mathf.Max(0, activeWeapon.magazineSize - activeWeapon.bulletsLeft);
+        int bulletsToReload = Mathf.Min(bulletsNeeded, ammoLeft);
+
+        activeWeapon.bulletsLeft += bulletsToReload;
+        DecreaseTotalAmmo(bulletsToReload, activeWeapon.thisWeaponModel);
     }
 
     public void DecreaseTotalAmmo(int bulletsToDecrease, Weapon.WeaponModel thisWeaponModel)
@@ -233,5 +265,14 @@ public class WeaponManager : MonoBehaviour
 
         grenades -= 1;
         HUDManager.Instance.UpdateThrowables(Throwable.ThrowableType.Grenade);
+    }
+
+    private void DisableOutlineRecursively(GameObject root)
+    {
+        Outline[] outlines = root.GetComponentsInChildren<Outline>(true);
+        foreach (Outline outline in outlines)
+        {
+            outline.enabled = false;
+        }
     }
 }

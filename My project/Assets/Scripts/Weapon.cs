@@ -62,6 +62,9 @@ public class Weapon : MonoBehaviour
 
     public ShootingMode currentShootingMode;
 
+    private static Material fallbackMuzzleMaterial;
+    private static Texture2D fallbackMuzzleTexture;
+
     private void Awake()
     {
         readyToShoot = true;
@@ -69,6 +72,7 @@ public class Weapon : MonoBehaviour
         animator = GetComponent<Animator>();
 
         bulletsLeft = magazineSize;
+        EnsureMuzzleMaterial();
     }
 
 
@@ -220,5 +224,83 @@ public class Weapon : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         Destroy(bullet);
+    }
+
+    private void EnsureMuzzleMaterial()
+    {
+        if (muzzleEffect == null)
+        {
+            return;
+        }
+
+        ParticleSystemRenderer renderer = muzzleEffect.GetComponent<ParticleSystemRenderer>();
+        if (renderer == null)
+        {
+            return;
+        }
+
+        Material current = renderer.sharedMaterial;
+        if (current != null && current.mainTexture != null)
+        {
+            return;
+        }
+
+        if (fallbackMuzzleMaterial == null)
+        {
+            Shader shader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+            if (shader == null)
+            {
+                shader = Shader.Find("Particles/Standard Unlit");
+            }
+
+            if (shader == null)
+            {
+                shader = Shader.Find("Legacy Shaders/Particles/Additive");
+            }
+
+            if (shader == null)
+            {
+                return;
+            }
+
+            fallbackMuzzleMaterial = new Material(shader);
+            fallbackMuzzleTexture = CreateRadialTexture(32);
+
+            if (fallbackMuzzleMaterial.HasProperty("_BaseMap"))
+            {
+                fallbackMuzzleMaterial.SetTexture("_BaseMap", fallbackMuzzleTexture);
+            }
+
+            if (fallbackMuzzleMaterial.HasProperty("_MainTex"))
+            {
+                fallbackMuzzleMaterial.SetTexture("_MainTex", fallbackMuzzleTexture);
+            }
+
+            fallbackMuzzleMaterial.color = new Color(1f, 0.85f, 0.45f, 1f);
+        }
+
+        renderer.sharedMaterial = fallbackMuzzleMaterial;
+    }
+
+    private static Texture2D CreateRadialTexture(int size)
+    {
+        Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Vector2 center = new Vector2((size - 1) * 0.5f, (size - 1) * 0.5f);
+        float maxDistance = center.magnitude;
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                float distance = Vector2.Distance(new Vector2(x, y), center) / maxDistance;
+                float alpha = Mathf.Clamp01(1f - distance * distance * 1.5f);
+                texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+            }
+        }
+
+        texture.Apply();
+        return texture;
     }
 }

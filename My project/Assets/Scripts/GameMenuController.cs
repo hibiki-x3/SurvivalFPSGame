@@ -41,6 +41,7 @@ public class GameMenuController : MonoBehaviour
         public int slot2Bullets;
 
         public int score;
+        public int playerHealth;
 
         public bool hasAxeSpawnState;
         public int axeCurrentPerSpawn;
@@ -200,7 +201,8 @@ public class GameMenuController : MonoBehaviour
             slot0Bullets = -1,
             slot1Bullets = -1,
             slot2Bullets = -1,
-            score = 0
+            score = 0,
+            playerHealth = -1
         };
 
         if (playerTransform != null)
@@ -231,6 +233,12 @@ public class GameMenuController : MonoBehaviour
         if (HUDManager.Instance != null)
         {
             data.score = HUDManager.Instance.Score;
+        }
+
+        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+        if (playerHealth != null)
+        {
+            data.playerHealth = playerHealth.CurrentHealth;
         }
 
         AxeZombSpawnController spawnController = FindObjectOfType<AxeZombSpawnController>();
@@ -268,6 +276,15 @@ public class GameMenuController : MonoBehaviour
         if (HUDManager.Instance != null)
         {
             HUDManager.Instance.SetScore(data.score);
+        }
+
+        if (data.playerHealth >= 0)
+        {
+            PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+            if (playerHealth != null)
+            {
+                playerHealth.SetHealth(data.playerHealth);
+            }
         }
 
         if (playerTransform != null)

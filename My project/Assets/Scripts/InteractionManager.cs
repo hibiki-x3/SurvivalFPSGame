@@ -31,35 +31,46 @@ public class InteractionManager : MonoBehaviour
         if(Physics.Raycast(ray, out hit, interactionRange))
         {
             GameObject objectHitByRaycast = hit.transform.gameObject;
+            Weapon weapon = objectHitByRaycast.GetComponentInParent<Weapon>();
 
             //checking if the weapon displays outline whenever we are looking at it
-            if (objectHitByRaycast.GetComponent<Weapon>() && objectHitByRaycast.GetComponent<Weapon>().isActiveWeapon == false)
+            if (weapon && weapon.isActiveWeapon == false)
             {
-                hoveredWeapon = objectHitByRaycast.gameObject.GetComponent<Weapon>();
-                hoveredWeapon.GetComponent<Outline>().enabled = true;
+                hoveredWeapon = weapon;
+                Outline outline = hoveredWeapon.GetComponent<Outline>();
+                if (outline != null)
+                {
+                    outline.enabled = true;
+                }
+
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    WeaponManager.Instance.PickupWeapon(objectHitByRaycast.gameObject);
+                    WeaponManager.Instance.PickupWeapon(hoveredWeapon.gameObject);
                 }
             }
             else
             {
                 if (hoveredWeapon)
                 {
-                    hoveredWeapon.GetComponent<Outline>().enabled = false;
+                    Outline outline = hoveredWeapon.GetComponent<Outline>();
+                    if (outline != null)
+                    {
+                        outline.enabled = false;
+                    }
                 }
             }
 
             //AmmoBox
-            if (objectHitByRaycast.GetComponent<AmmoBox>())
+            AmmoBox ammoBox = objectHitByRaycast.GetComponentInParent<AmmoBox>();
+            if (ammoBox)
             {
-                hoveredAmmoBox = objectHitByRaycast.gameObject.GetComponent<AmmoBox>();
+                hoveredAmmoBox = ammoBox;
                 hoveredAmmoBox.GetComponent<Outline>().enabled = true;
                 if (Input.GetKeyDown(KeyCode.F))
                 {
                     WeaponManager.Instance.PickupAmmo(hoveredAmmoBox);
                     //Destroy the ammo box after picking it up
-                    Destroy(objectHitByRaycast.gameObject);
+                    Destroy(hoveredAmmoBox.gameObject);
                 }
             }
             else
