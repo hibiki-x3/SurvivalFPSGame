@@ -28,6 +28,7 @@ public class HUDManager : MonoBehaviour
     public Text scoreLegacyText;
 
     public Sprite emptySlot;
+    public Sprite greySlot;
 
     public int Score { get; private set; }
 
@@ -109,6 +110,13 @@ public class HUDManager : MonoBehaviour
         unActiveWeaponUI.sprite = emptySlot;
     }
     
+    if(WeaponManager.Instance.grenades <= 0)
+        {
+            lethalUI.sprite = greySlot;
+        }
+
+
+
 }
 
     private object GetWeaponSprite(Weapon.WeaponModel model)
@@ -119,6 +127,8 @@ public class HUDManager : MonoBehaviour
                 return Resources.Load<GameObject>("PistolM1911_Weapon").GetComponent<SpriteRenderer>().sprite;
             case Weapon.WeaponModel.M16:
                 return Resources.Load<GameObject>("M16_Weapon").GetComponent<SpriteRenderer>().sprite;
+            case Weapon.WeaponModel.M249:
+                return Resources.Load<GameObject>("M249_Weapon").GetComponent<SpriteRenderer>().sprite;
             default:
                 return null;
         }
@@ -132,6 +142,8 @@ public class HUDManager : MonoBehaviour
                 return Resources.Load<GameObject>("Pistol_Ammo").GetComponent<SpriteRenderer>().sprite;
             case Weapon.WeaponModel.M16:
                 return Resources.Load<GameObject>("Rifle_Ammo").GetComponent<SpriteRenderer>().sprite;
+            case Weapon.WeaponModel.M249:
+                return Resources.Load<GameObject>("Machine_Gun_Ammo").GetComponent<SpriteRenderer>().sprite;
             default:
                 return null;
         }
