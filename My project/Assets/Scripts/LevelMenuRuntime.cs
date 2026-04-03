@@ -9,6 +9,7 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private bool showStartMenu = true;
     private bool showPauseMenu;
+    private bool showGameOverMenu;
 
     private Rect menuRect;
     private GUIStyle titleStyle;
@@ -25,7 +26,7 @@ public class LevelMenuRuntime : MonoBehaviour
             return;
         }
 
-        if (FindObjectOfType<LevelMenuRuntime>() != null)
+        if (FindAnyObjectByType<LevelMenuRuntime>() != null)
         {
             return;
         }
@@ -45,7 +46,7 @@ public class LevelMenuRuntime : MonoBehaviour
         gameMenuController = GetComponent<GameMenuController>();
         if (gameMenuController == null)
         {
-            gameMenuController = FindObjectOfType<GameMenuController>();
+            gameMenuController = FindAnyObjectByType<GameMenuController>();
         }
 
         if (gameMenuController == null)
@@ -58,7 +59,13 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void Start()
     {
+        PlayerHealth.PlayerDied += HandlePlayerDied;
         EnterMenuState(startMenu: true);
+    }
+
+    private void OnDestroy()
+    {
+        PlayerHealth.PlayerDied -= HandlePlayerDied;
     }
 
     private void Update()
@@ -67,6 +74,19 @@ public class LevelMenuRuntime : MonoBehaviour
         {
             showPauseMenu = false;
             showStartMenu = false;
+            showGameOverMenu = false;
+            return;
+        }
+
+        PlayerHealth playerHealth = PlayerHealth.Instance;
+        if (!showGameOverMenu && playerHealth != null && playerHealth.CurrentHealth <= 0)
+        {
+            EnterGameOverState();
+            return;
+        }
+
+        if (showGameOverMenu)
+        {
             return;
         }
 
@@ -92,7 +112,7 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!showStartMenu && !showPauseMenu)
+        if (!showStartMenu && !showPauseMenu && !showGameOverMenu)
         {
             return;
         }
@@ -107,12 +127,14 @@ public class LevelMenuRuntime : MonoBehaviour
         menuRect.x = (Screen.width - menuRect.width) * 0.5f;
         menuRect.y = (Screen.height - menuRect.height) * 0.5f;
 
-        string windowTitle = showStartMenu ? "LEVEL START" : "PAUSED";
+        string windowTitle = showGameOverMenu ? "GAME OVER" : (showStartMenu ? "LEVEL START" : "PAUSED");
         menuRect = GUI.ModalWindow(1717, menuRect, DrawMenuWindow, windowTitle);
 
         GUI.Label(
             new Rect(menuRect.x + 20f, menuRect.y + 48f, menuRect.width - 40f, 36f),
-            showStartMenu ? "Prepare and begin when ready." : "Select an action.",
+            showGameOverMenu
+                ? "You were defeated. Choose what to do next."
+                : (showStartMenu ? "Prepare and begin when ready." : "Select an action."),
             subtitleStyle
         );
     }
@@ -124,6 +146,33 @@ public class LevelMenuRuntime : MonoBehaviour
         const float width = 380f;
         const float height = 52f;
         const float spacing = 14f;
+
+        if (showGameOverMenu)
+        {
+            if (GUI.Button(new Rect(x, y, width, height), "Retry Level", buttonStyle))
+            {
+                Time.timeScale = 1f;
+                gameMenuController.RetryLevel();
+            }
+
+            y += height + spacing;
+
+            if (GUI.Button(new Rect(x, y, width, height), "Load Save", buttonStyle))
+            {
+                Time.timeScale = 1f;
+                gameMenuController.LoadGame();
+            }
+
+            y += height + spacing;
+
+            if (GUI.Button(new Rect(x, y, width, height), "Main Menu", buttonStyle))
+            {
+                Time.timeScale = 1f;
+                gameMenuController.ExitToMainMenu();
+            }
+
+            return;
+        }
 
         if (showStartMenu)
         {
@@ -187,6 +236,7 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void EnterMenuState(bool startMenu)
     {
+        showGameOverMenu = false;
         showStartMenu = startMenu;
         showPauseMenu = !startMenu;
 
@@ -197,12 +247,34 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void ResumeGameplay()
     {
+        showGameOverMenu = false;
         showStartMenu = false;
         showPauseMenu = false;
 
         Time.timeScale = 1f;
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void HandlePlayerDied()
+    {
+        if (SceneManager.GetActiveScene().name != LevelSceneName)
+        {
+            return;
+        }
+
+        EnterGameOverState();
+    }
+
+    private void EnterGameOverState()
+    {
+        showGameOverMenu = true;
+        showStartMenu = false;
+        showPauseMenu = false;
+
+        Time.timeScale = 0f;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     private void EnsureGuiStyles()

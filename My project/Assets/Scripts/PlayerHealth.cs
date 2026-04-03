@@ -1,14 +1,17 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
 
 public class PlayerHealth : MonoBehaviour
 {
     public static PlayerHealth Instance { get; private set; }
+    public static event Action PlayerDied;
 
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private float hitInvulnerability = 0.2f;
+    [SerializeField] private bool autoReloadOnDeath = false;
     [SerializeField] private float deathReloadDelay = 1.8f;
 
     public int MaxHealth => maxHealth;
@@ -127,7 +130,12 @@ public class PlayerHealth : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
-        StartCoroutine(ReloadLevelAfterDelay());
+        PlayerDied?.Invoke();
+
+        if (autoReloadOnDeath)
+        {
+            StartCoroutine(ReloadLevelAfterDelay());
+        }
     }
 
     private IEnumerator ReloadLevelAfterDelay()

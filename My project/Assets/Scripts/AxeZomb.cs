@@ -20,17 +20,24 @@ public class AxeZomb : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            playerHealth = player.GetComponent<PlayerHealth>();
-        }
+        CachePlayerReferences();
 
         // Get the Animator, NavMeshAgent, and CapsuleCollider components
         animator = GetComponent<Animator>();
         navAgent = GetComponent<NavMeshAgent>();
         zombieCollider = GetComponent<CapsuleCollider>();
         navAgent.speed = speed;
+    }
+
+    private void Update()
+    {
+        if (isDead)
+        {
+            return;
+        }
+
+        // Fallback attack check so damage still applies if animator state callbacks are skipped.
+        TryAttackPlayer();
     }
 
     public void TakeDamage(int damage)
@@ -78,21 +85,19 @@ public class AxeZomb : MonoBehaviour
             return;
         }
 
-        if (player == null)
-        {
-            player = GameObject.FindGameObjectWithTag("Player");
-            if (player != null)
-            {
-                playerHealth = player.GetComponent<PlayerHealth>();
-            }
-        }
+        CachePlayerReferences();
 
         if (player == null || playerHealth == null || playerHealth.IsDead)
         {
             return;
         }
 
-        float distance = Vector3.Distance(player.transform.position, transform.position);
+        Vector3 zombiePos = transform.position;
+        Vector3 playerPos = player.transform.position;
+        zombiePos.y = 0f;
+        playerPos.y = 0f;
+
+        float distance = Vector3.Distance(playerPos, zombiePos);
         if (distance > attackRange)
         {
             return;
@@ -100,5 +105,31 @@ public class AxeZomb : MonoBehaviour
 
         nextAttackTime = Time.time + attackCooldown;
         playerHealth.TakeDamage(attackDamage);
+    }
+
+    private void CachePlayerReferences()
+    {
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("Player");
+        }
+
+        if (playerHealth == null)
+        {
+            if (player != null)
+            {
+                playerHealth = player.GetComponent<PlayerHealth>();
+
+                if (playerHealth == null)
+                {
+                    playerHealth = player.AddComponent<PlayerHealth>();
+                }
+            }
+
+            if (playerHealth == null)
+            {
+                playerHealth = FindAnyObjectByType<PlayerHealth>();
+            }
+        }
     }
 }

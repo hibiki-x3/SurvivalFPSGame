@@ -68,7 +68,7 @@ public class GameMenuController : MonoBehaviour
             return;
         }
 
-        if (FindObjectOfType<GameMenuController>() != null)
+        if (FindAnyObjectByType<GameMenuController>() != null)
         {
             return;
         }
@@ -235,13 +235,13 @@ public class GameMenuController : MonoBehaviour
             data.score = HUDManager.Instance.Score;
         }
 
-        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+        PlayerHealth playerHealth = FindAnyObjectByType<PlayerHealth>();
         if (playerHealth != null)
         {
             data.playerHealth = playerHealth.CurrentHealth;
         }
 
-        AxeZombSpawnController spawnController = FindObjectOfType<AxeZombSpawnController>();
+        AxeZombSpawnController spawnController = FindAnyObjectByType<AxeZombSpawnController>();
         if (spawnController != null)
         {
             AxeZombSpawnController.SpawnCycleState spawnState = spawnController.GetSpawnCycleState();
@@ -280,7 +280,7 @@ public class GameMenuController : MonoBehaviour
 
         if (data.playerHealth >= 0)
         {
-            PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+            PlayerHealth playerHealth = FindAnyObjectByType<PlayerHealth>();
             if (playerHealth != null)
             {
                 playerHealth.SetHealth(data.playerHealth);
@@ -306,7 +306,7 @@ public class GameMenuController : MonoBehaviour
 
         if (data.hasAxeSpawnState)
         {
-            AxeZombSpawnController spawnController = FindObjectOfType<AxeZombSpawnController>();
+            AxeZombSpawnController spawnController = FindAnyObjectByType<AxeZombSpawnController>();
             if (spawnController != null)
             {
                 spawnController.SetSpawnCycleState(new AxeZombSpawnController.SpawnCycleState

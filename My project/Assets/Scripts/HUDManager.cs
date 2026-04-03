@@ -56,7 +56,7 @@ public class HUDManager : MonoBehaviour
 
     private void Start()
     {
-        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
+        PlayerHealth playerHealth = FindAnyObjectByType<PlayerHealth>();
         if (playerHealth != null)
         {
             SetHealth(playerHealth.CurrentHealth, playerHealth.MaxHealth);
@@ -229,7 +229,7 @@ public class HUDManager : MonoBehaviour
             return;
         }
 
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = FindAnyObjectByType<Canvas>();
         if (canvas == null)
         {
             return;

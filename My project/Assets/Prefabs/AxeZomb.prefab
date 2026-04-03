@@ -1805,6 +1805,9 @@ MonoBehaviour:
   speed: 2.5
   health: 100
   destroyAfterDeathDelay: 5
+  attackDamage: 10
+  attackCooldown: 1
+  attackRange: 2.4
 --- !u!1 &3566936197555359610
 GameObject:
   m_ObjectHideFlags: 0
