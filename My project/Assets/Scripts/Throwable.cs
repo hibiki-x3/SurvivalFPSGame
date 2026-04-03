@@ -5,6 +5,7 @@ public class Throwable : MonoBehaviour
     [SerializeField] float delay = 3f;
     [SerializeField] float damageRadius = 20f;
     [SerializeField] float explosionForce = 1200f;
+    [SerializeField] int explosionDamage = 50;
 
     float countdown;
 
@@ -72,8 +73,12 @@ public class Throwable : MonoBehaviour
             {
                 rb.AddExplosionForce(explosionForce, transform.position, damageRadius);
             }
+
+            AxeZomb target = objectInRange.GetComponent<AxeZomb>(); 
+            if (target != null)
+            {
+                target.TakeDamage(explosionDamage);
+            }
         }
-
-
     }
 }
