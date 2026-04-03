@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using NUnit.Framework;
 using System;
 
 public class Weapon : MonoBehaviour
@@ -49,7 +47,8 @@ public class Weapon : MonoBehaviour
     public enum WeaponModel
     {
         PistolM1911,
-        M16
+        M16,
+        M249
     }
 
     public WeaponModel thisWeaponModel;

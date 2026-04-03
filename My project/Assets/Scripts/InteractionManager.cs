@@ -90,5 +90,17 @@ public class InteractionManager : MonoBehaviour
                 }
             }
         }
+        else 
+    {
+        // If we look at the sky/nothing, turn off all outlines
+        if (hoveredWeapon && hoveredWeapon.GetComponent<Outline>() != null)
+            hoveredWeapon.GetComponent<Outline>().enabled = false;
+            
+        if (hoveredAmmoBox && hoveredAmmoBox.GetComponent<Outline>() != null)
+            hoveredAmmoBox.GetComponent<Outline>().enabled = false;
+            
+        if (hoveredThrowable && hoveredThrowable.GetComponent<Outline>() != null)
+            hoveredThrowable.GetComponent<Outline>().enabled = false;
+    }
     }
 }

@@ -6,9 +6,10 @@ public class AmmoBox : MonoBehaviour
     {
         PistolAmmo,
         RifleAmmo,
+        MachineGunAmmo,
         UniversalAmmo
     }
 
     public AmmoType ammoType;
-    public int ammoAmount = 200;
+    public int ammoAmount = 300;
 }

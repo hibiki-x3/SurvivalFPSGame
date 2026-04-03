@@ -14,6 +14,11 @@ public class SoundManager : MonoBehaviour
     public AudioClip M16Shot;
     public AudioClip M1911Reload;
     public AudioClip M16Reload;
+    public AudioClip M249Shot;
+    public AudioClip M249Reload;
+
+    public AudioSource throwablesChannel;
+    public AudioClip grenadeSound;
 
     public AudioClip AxeZombHit;
     [Range(0f, 2f)] public float AxeZombHitVolume = 1.75f;
@@ -42,6 +47,9 @@ public class SoundManager : MonoBehaviour
             case WeaponModel.M16:
                 ShootingChannel.PlayOneShot(M16Shot);
                 break;
+            case WeaponModel.M249:
+                ShootingChannel.PlayOneShot(M249Shot);
+                break;
         }
     }
 
@@ -54,6 +62,9 @@ public class SoundManager : MonoBehaviour
                 break;
             case WeaponModel.M16:
                 ReloadingChannel.PlayOneShot(M16Reload);
+                break;
+            case WeaponModel.M249:
+                ReloadingChannel.PlayOneShot(M249Reload);
                 break;
         }
     }

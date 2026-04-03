@@ -13,10 +13,11 @@ public class WeaponManager : MonoBehaviour
     [Header("Ammo")]
     public int totalRifleAmmo = 0;
     public int totalPistolAmmo = 0;
+    public int totalMachineGunAmmo = 0;
 
     [Header("Throwables")]
     public int grenades = 0;
-    public float throwForce = 10f;
+    public float throwForce = 40f;
     public GameObject grenadePrefab;
     public GameObject throwableSpawn;
     public float forceMultiplier = 0;
@@ -69,7 +70,7 @@ public class WeaponManager : MonoBehaviour
         }
 
         //Holding down G to increase the throw force of the grenade and throwing it when releasing G
-        if(Input.GetKeyDown(KeyCode.G))
+        if(Input.GetKey(KeyCode.G))
         {
             forceMultiplier += Time.deltaTime;
 
@@ -159,9 +160,13 @@ public class WeaponManager : MonoBehaviour
             case AmmoBox.AmmoType.RifleAmmo:
                 totalRifleAmmo += ammo.ammoAmount;
                 break;
+            case AmmoBox.AmmoType.MachineGunAmmo:
+                totalMachineGunAmmo += ammo.ammoAmount;
+                break;
             case AmmoBox.AmmoType.UniversalAmmo:
                 totalPistolAmmo += ammo.ammoAmount;
                 totalRifleAmmo += ammo.ammoAmount;
+                totalMachineGunAmmo += ammo.ammoAmount;
                 break;
         }
     }
@@ -176,6 +181,9 @@ public class WeaponManager : MonoBehaviour
             case Weapon.WeaponModel.M16:
                 totalRifleAmmo -= bulletsToDecrease;
                 break;
+            case Weapon.WeaponModel.M249:
+                totalMachineGunAmmo -= bulletsToDecrease;
+                break;
         }
     }
 
@@ -187,6 +195,8 @@ public class WeaponManager : MonoBehaviour
                 return totalPistolAmmo;
             case Weapon.WeaponModel.M16:
                 return totalRifleAmmo;
+            case Weapon.WeaponModel.M249:
+                return totalMachineGunAmmo;
             default:
                 return 0;
         }
