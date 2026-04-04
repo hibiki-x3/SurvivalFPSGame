@@ -4993,6 +4993,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: M249
       objectReference: {fileID: 0}
+    - target: {fileID: 1376339466518900907, guid: 431125bdd50bd834796d9135cdd21bc0, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1476386832608420769, guid: 431125bdd50bd834796d9135cdd21bc0, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3857931513466131360, guid: 431125bdd50bd834796d9135cdd21bc0, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3944297356965470764, guid: 431125bdd50bd834796d9135cdd21bc0, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7099039914987920468, guid: 431125bdd50bd834796d9135cdd21bc0, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8149065524359824288, guid: 431125bdd50bd834796d9135cdd21bc0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 23.227098
