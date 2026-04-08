@@ -13,6 +13,7 @@ public class WeaponManager : MonoBehaviour
     [Header("Ammo")]
     public int totalRifleAmmo = 0;
     public int totalPistolAmmo = 0;
+    public int totalSmgAmmo = 0;
     public int totalMachineGunAmmo = 0;
 
     [Header("Throwables")]
@@ -164,6 +165,9 @@ public class WeaponManager : MonoBehaviour
             case AmmoBox.AmmoType.RifleAmmo:
                 totalRifleAmmo += ammo.ammoAmount;
                 break;
+            case AmmoBox.AmmoType.SmgAmmo:
+                totalSmgAmmo += ammo.ammoAmount;
+                break;
             case AmmoBox.AmmoType.MachineGunAmmo:
                 totalMachineGunAmmo += ammo.ammoAmount;
                 break;
@@ -171,6 +175,7 @@ public class WeaponManager : MonoBehaviour
                 totalPistolAmmo += ammo.ammoAmount;
                 totalRifleAmmo += ammo.ammoAmount;
                 totalMachineGunAmmo += ammo.ammoAmount;
+                totalSmgAmmo += ammo.ammoAmount;
                 break;
         }
 
@@ -213,6 +218,9 @@ public class WeaponManager : MonoBehaviour
             case Weapon.WeaponModel.M16:
                 totalRifleAmmo -= bulletsToDecrease;
                 break;
+            case Weapon.WeaponModel.Uzi:
+                totalSmgAmmo -= bulletsToDecrease;
+                break;
             case Weapon.WeaponModel.M249:
                 totalMachineGunAmmo -= bulletsToDecrease;
                 break;
@@ -227,6 +235,8 @@ public class WeaponManager : MonoBehaviour
                 return totalPistolAmmo;
             case Weapon.WeaponModel.M16:
                 return totalRifleAmmo;
+            case Weapon.WeaponModel.Uzi:
+                return totalSmgAmmo;
             case Weapon.WeaponModel.M249:
                 return totalMachineGunAmmo;
             default:

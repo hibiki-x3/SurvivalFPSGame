@@ -6,6 +6,7 @@ public class AmmoBox : MonoBehaviour
     {
         PistolAmmo,
         RifleAmmo,
+        SmgAmmo,
         MachineGunAmmo,
         UniversalAmmo
     }
@@ -35,6 +36,8 @@ public class AmmoBox : MonoBehaviour
                 return AmmoType.PistolAmmo;
             case Weapon.WeaponModel.M16:
                 return AmmoType.RifleAmmo;
+            case Weapon.WeaponModel.Uzi:
+                return AmmoType.SmgAmmo;
             case Weapon.WeaponModel.M249:
                 return AmmoType.MachineGunAmmo;
             default:

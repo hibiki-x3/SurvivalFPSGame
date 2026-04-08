@@ -48,6 +48,7 @@ public class Weapon : MonoBehaviour
     {
         PistolM1911,
         M16,
+        Uzi,
         M249
     }
 
