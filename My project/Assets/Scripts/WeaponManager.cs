@@ -65,10 +65,6 @@ public class WeaponManager : MonoBehaviour
         {
             SwitchActiveSlot(1);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            SwitchActiveSlot(2);
-        }
 
         //Holding down G to increase the throw force of the grenade and throwing it when releasing G
         if(Input.GetKey(KeyCode.G))
