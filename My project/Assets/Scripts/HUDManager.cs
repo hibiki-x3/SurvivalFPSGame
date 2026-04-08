@@ -176,6 +176,8 @@ public class HUDManager : MonoBehaviour
                 return Resources.Load<GameObject>("PistolM1911_Weapon").GetComponent<SpriteRenderer>().sprite;
             case Weapon.WeaponModel.M16:
                 return Resources.Load<GameObject>("M16_Weapon").GetComponent<SpriteRenderer>().sprite;
+            case Weapon.WeaponModel.Uzi:
+                return Resources.Load<GameObject>("Uzi_Weapon").GetComponent<SpriteRenderer>().sprite;
             case Weapon.WeaponModel.M249:
                 return Resources.Load<GameObject>("M249_Weapon").GetComponent<SpriteRenderer>().sprite;
             default:
@@ -191,6 +193,8 @@ public class HUDManager : MonoBehaviour
                 return Resources.Load<GameObject>("Pistol_Ammo").GetComponent<SpriteRenderer>().sprite;
             case Weapon.WeaponModel.M16:
                 return Resources.Load<GameObject>("Rifle_Ammo").GetComponent<SpriteRenderer>().sprite;
+            case Weapon.WeaponModel.Uzi:
+                return Resources.Load<GameObject>("Smg_Ammo").GetComponent<SpriteRenderer>().sprite;
             case Weapon.WeaponModel.M249:
                 return Resources.Load<GameObject>("Machine_Gun_Ammo").GetComponent<SpriteRenderer>().sprite;
             default:

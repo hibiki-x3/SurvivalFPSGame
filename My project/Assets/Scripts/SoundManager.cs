@@ -16,6 +16,8 @@ public class SoundManager : MonoBehaviour
     public AudioClip M16Reload;
     public AudioClip M249Shot;
     public AudioClip M249Reload;
+    public AudioClip UziShot;
+    public AudioClip UziReload;
 
     public AudioSource throwablesChannel;
     public AudioClip grenadeSound;
@@ -47,6 +49,9 @@ public class SoundManager : MonoBehaviour
             case WeaponModel.M16:
                 ShootingChannel.PlayOneShot(M16Shot);
                 break;
+            case WeaponModel.Uzi:
+                ShootingChannel.PlayOneShot(UziShot);
+                break;
             case WeaponModel.M249:
                 ShootingChannel.PlayOneShot(M249Shot);
                 break;
@@ -62,6 +67,9 @@ public class SoundManager : MonoBehaviour
                 break;
             case WeaponModel.M16:
                 ReloadingChannel.PlayOneShot(M16Reload);
+                break;
+            case WeaponModel.Uzi:
+                ReloadingChannel.PlayOneShot(UziReload);
                 break;
             case WeaponModel.M249:
                 ReloadingChannel.PlayOneShot(M249Reload);
