@@ -1256,6 +1256,7 @@ GameObject:
   - component: {fileID: 642351200}
   - component: {fileID: 642351199}
   - component: {fileID: 642351198}
+  - component: {fileID: 642351202}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1342,6 +1343,29 @@ Transform:
   - {fileID: 816527953}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &642351202
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642351197}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9252475
+  m_Height: 8.26646
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.8640766, z: 0.017445624}
 --- !u!1 &646917847
 GameObject:
   m_ObjectHideFlags: 0
@@ -1468,6 +1492,13 @@ MonoBehaviour:
   activeWeaponSlot: {fileID: 0}
   totalRifleAmmo: 0
   totalPistolAmmo: 0
+  totalMachineGunAmmo: 0
+  grenades: 0
+  throwForce: 40
+  grenadePrefab: {fileID: 0}
+  throwableSpawn: {fileID: 0}
+  forceMultiplier: 0
+  forceMultiplierLimit: 2
 --- !u!4 &680409518
 Transform:
   m_ObjectHideFlags: 0
@@ -1690,6 +1721,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalReferences
   bulletImpactEffectPrefab: {fileID: 8151064199544456451, guid: 91185fac8a891244dab19429c343ebda, type: 3}
+  grenadeExplosionEffect: {fileID: 0}
   bloodEffectPrefab: {fileID: 3889168853336657509}
 --- !u!4 &707024056
 Transform:
@@ -2249,6 +2281,10 @@ MonoBehaviour:
   M16Shot: {fileID: 8300000, guid: 7e094d42ab54bb346aa76c1fa0c09d6a, type: 3}
   M1911Reload: {fileID: 8300000, guid: 8ec17f22c22c4424699ffcd5c7687245, type: 3}
   M16Reload: {fileID: 8300000, guid: 02239e4da82669e4fbda90d932b81038, type: 3}
+  M249Shot: {fileID: 0}
+  M249Reload: {fileID: 0}
+  throwablesChannel: {fileID: 0}
+  grenadeSound: {fileID: 0}
   AxeZombHit: {fileID: 8300000, guid: 36104c8b981b4a349a1948b61c9e8a20, type: 3}
   AxeZombHitVolume: 1.25
   emptyMagazineSoundM1911: {fileID: 948379334}
@@ -7962,7 +7998,10 @@ MonoBehaviour:
   tacticalAmountUI: {fileID: 1754700161}
   scoreTMPText: {fileID: 0}
   scoreLegacyText: {fileID: 1467507756}
+  healthFillImage: {fileID: 0}
+  healthValueText: {fileID: 0}
   emptySlot: {fileID: 21300000, guid: 2fe7cb47ee4c5dd4bb0ad60f5396044e, type: 3}
+  greySlot: {fileID: 0}
 --- !u!4 &1404742354
 Transform:
   m_ObjectHideFlags: 0
@@ -14152,6 +14191,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   hoveredWeapon: {fileID: 0}
   hoveredAmmoBox: {fileID: 0}
+  hoveredThrowable: {fileID: 0}
   interactionRange: 5
 --- !u!4 &1933466377
 Transform:
@@ -14612,6 +14652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AmmoBox
   ammoType: 2
   ammoAmount: 200
+  useActiveWeaponAmmoType: 1
 --- !u!114 &2129756161
 MonoBehaviour:
   m_ObjectHideFlags: 0
