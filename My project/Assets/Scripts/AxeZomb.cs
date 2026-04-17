@@ -75,7 +75,7 @@ public class AxeZomb : MonoBehaviour
             navAgent.enabled = false;
             zombieCollider.enabled = false;
 
-            HUDManager.Instance?.AddScore(10);
+            HUDManager.Instance?.RegisterKill(10);
             TryDropAmmoBox();
 
             // Destroy the zombie after a delay to allow the death animation to play

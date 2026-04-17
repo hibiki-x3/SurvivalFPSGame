@@ -27,6 +27,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float recoilRandomYawMultiplier = 1f;
     [SerializeField] private float emptyMagSoundCooldown = 0.18f;
 
+    [Header("Arcade Balance Profile")]
+    [SerializeField] private bool useRuntimeWeaponProfile = true;
+
 
     //Bullet
     public GameObject bulletPrefab;
@@ -75,6 +78,8 @@ public class Weapon : MonoBehaviour
 
     private void Awake()
     {
+        ApplyRuntimeWeaponProfile();
+
         readyToShoot = true;
         burstBulletsLeft = bulletsPerBurst;
         animator = GetComponent<Animator>();
@@ -189,6 +194,50 @@ public class Weapon : MonoBehaviour
 
         float yawNoise = UnityEngine.Random.Range(-recoilYawKick, recoilYawKick) * recoilRandomYawMultiplier;
         movementScript.ApplyRecoilKick(recoilPitchKick, yawNoise);
+    }
+
+    private void ApplyRuntimeWeaponProfile()
+    {
+        if (!useRuntimeWeaponProfile)
+        {
+            return;
+        }
+
+        switch (thisWeaponModel)
+        {
+            case WeaponModel.PistolM1911:
+                shootingDelay = 0.18f;
+                spreadIntensity = 0.015f;
+                recoilPitchKick = 0.35f;
+                recoilYawKick = 0.045f;
+                recoilRandomYawMultiplier = 0.85f;
+                break;
+
+            case WeaponModel.M16:
+                shootingDelay = 0.10f;
+                spreadIntensity = 0.022f;
+                recoilPitchKick = 0.45f;
+                recoilYawKick = 0.055f;
+                recoilRandomYawMultiplier = 1.0f;
+                bulletsPerBurst = Mathf.Max(3, bulletsPerBurst);
+                break;
+
+            case WeaponModel.Uzi:
+                shootingDelay = 0.075f;
+                spreadIntensity = 0.04f;
+                recoilPitchKick = 0.30f;
+                recoilYawKick = 0.09f;
+                recoilRandomYawMultiplier = 1.2f;
+                break;
+
+            case WeaponModel.M249:
+                shootingDelay = 0.09f;
+                spreadIntensity = 0.05f;
+                recoilPitchKick = 0.55f;
+                recoilYawKick = 0.11f;
+                recoilRandomYawMultiplier = 1.35f;
+                break;
+        }
     }
 
     private void Reload()

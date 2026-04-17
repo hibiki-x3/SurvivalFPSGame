@@ -39,6 +39,14 @@ public class HUDManager : MonoBehaviour
     private Image damageFlashImage;
     private Text damageDirectionText;
     private Coroutine damageFlashRoutine;
+    private Text killFeedText;
+    private Coroutine killFeedRoutine;
+    private int currentKillStreak;
+    private float lastKillTime = -999f;
+
+    [Header("Combat Feed")]
+    [SerializeField] private float streakWindowSeconds = 3.5f;
+    [SerializeField] private float killFeedDuration = 1.2f;
 
     public int Score { get; private set; }
 
@@ -55,6 +63,7 @@ public class HUDManager : MonoBehaviour
 
         EnsureHealthUI();
         EnsureDamageFeedbackUI();
+        EnsureKillFeedUI();
 
         UpdateScoreText();
     }
@@ -82,6 +91,23 @@ public class HUDManager : MonoBehaviour
     {
         Score += points;
         UpdateScoreText();
+    }
+
+    public void RegisterKill(int points)
+    {
+        AddScore(points);
+
+        if (Time.time <= lastKillTime + streakWindowSeconds)
+        {
+            currentKillStreak++;
+        }
+        else
+        {
+            currentKillStreak = 1;
+        }
+
+        lastKillTime = Time.time;
+        ShowKillFeed(currentKillStreak);
     }
 
     public void SetScore(int score)
@@ -345,6 +371,98 @@ public class HUDManager : MonoBehaviour
         {
             damageDirectionText = existingDirection.GetComponent<Text>();
         }
+    }
+
+    private void EnsureKillFeedUI()
+    {
+        if (killFeedText != null)
+        {
+            return;
+        }
+
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            return;
+        }
+
+        Transform existing = canvas.transform.Find("KillFeedText");
+        if (existing == null)
+        {
+            GameObject feedObject = new GameObject("KillFeedText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            feedObject.transform.SetParent(canvas.transform, false);
+
+            RectTransform rect = feedObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.65f);
+            rect.anchorMax = new Vector2(0.5f, 0.65f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(380f, 56f);
+
+            killFeedText = feedObject.GetComponent<Text>();
+            killFeedText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            killFeedText.alignment = TextAnchor.MiddleCenter;
+            killFeedText.fontSize = 28;
+            killFeedText.color = new Color(1f, 0.96f, 0.72f, 0f);
+            killFeedText.text = string.Empty;
+        }
+        else
+        {
+            killFeedText = existing.GetComponent<Text>();
+        }
+    }
+
+    private void ShowKillFeed(int streak)
+    {
+        EnsureKillFeedUI();
+        if (killFeedText == null)
+        {
+            return;
+        }
+
+        string label = streak >= 3 ? "KILL STREAK x" + streak : "KILL +10";
+        killFeedText.text = label;
+        killFeedText.fontSize = streak >= 3 ? 34 : 28;
+        killFeedText.color = streak >= 3
+            ? new Color(1f, 0.64f, 0.35f, 1f)
+            : new Color(1f, 0.96f, 0.72f, 1f);
+
+        if (killFeedRoutine != null)
+        {
+            StopCoroutine(killFeedRoutine);
+        }
+
+        killFeedRoutine = StartCoroutine(AnimateKillFeed());
+    }
+
+    private IEnumerator AnimateKillFeed()
+    {
+        yield return new WaitForSecondsRealtime(killFeedDuration);
+
+        if (killFeedText == null)
+        {
+            yield break;
+        }
+
+        float timer = 0f;
+        const float fadeTime = 0.25f;
+        Color start = killFeedText.color;
+
+        while (timer < fadeTime)
+        {
+            timer += Time.unscaledDeltaTime;
+            float t = timer / fadeTime;
+
+            Color c = start;
+            c.a = Mathf.Lerp(start.a, 0f, t);
+            killFeedText.color = c;
+            yield return null;
+        }
+
+        Color done = killFeedText.color;
+        done.a = 0f;
+        killFeedText.color = done;
+        killFeedText.text = string.Empty;
+        killFeedRoutine = null;
     }
 
     private void HandlePlayerDamaged(float normalizedDamage, Vector3 sourcePosition, bool hasSource)
