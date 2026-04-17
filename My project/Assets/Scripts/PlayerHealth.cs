@@ -7,6 +7,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public static PlayerHealth Instance { get; private set; }
     public static event Action PlayerDied;
+    public static event Action<float, Vector3, bool> PlayerDamaged;
 
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
@@ -62,6 +63,16 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        TakeDamageInternal(damage, Vector3.zero, false);
+    }
+
+    public void TakeDamage(int damage, Vector3 sourcePosition)
+    {
+        TakeDamageInternal(damage, sourcePosition, true);
+    }
+
+    private void TakeDamageInternal(int damage, Vector3 sourcePosition, bool hasSource)
+    {
         if (damage <= 0 || IsDead)
         {
             return;
@@ -75,6 +86,8 @@ public class PlayerHealth : MonoBehaviour
         lastDamageTime = Time.time;
         CurrentHealth = Mathf.Max(0, CurrentHealth - damage);
         HUDManager.Instance?.SetHealth(CurrentHealth, maxHealth);
+        float normalizedDamage = Mathf.Clamp01(damage / (float)Mathf.Max(1, maxHealth));
+        PlayerDamaged?.Invoke(normalizedDamage, sourcePosition, hasSource);
 
         if (CurrentHealth <= 0)
         {

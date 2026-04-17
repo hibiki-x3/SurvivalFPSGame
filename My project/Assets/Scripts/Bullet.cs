@@ -15,9 +15,9 @@ public class Bullet : MonoBehaviour
             print("hit a zombie");
             SoundManager.Instance?.PlayAxeZombHitSound();
             SoundManager.Instance?.PlayHitTickSound();
-            HitMarkerUI.Instance?.ShowHitMarker();
+            bool isKill = zombie.TakeDamage(bulletDamage);
+            HitMarkerUI.Instance?.ShowHitMarker(bulletDamage, isKill);
             CreateBloodEffect(objectWeHit);
-            zombie.TakeDamage(bulletDamage);
             Destroy(gameObject);
             return;
         }
@@ -45,8 +45,8 @@ public class Bullet : MonoBehaviour
             print("hit a zombie (trigger)");
             SoundManager.Instance?.PlayAxeZombHitSound();
             SoundManager.Instance?.PlayHitTickSound();
-            HitMarkerUI.Instance?.ShowHitMarker();
-            zombie.TakeDamage(bulletDamage);
+            bool isKill = zombie.TakeDamage(bulletDamage);
+            HitMarkerUI.Instance?.ShowHitMarker(bulletDamage, isKill);
             Destroy(gameObject);
             return;
         }

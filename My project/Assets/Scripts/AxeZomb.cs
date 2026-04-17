@@ -23,6 +23,9 @@ public class AxeZomb : MonoBehaviour
     private bool isDead;
     private float nextAttackTime;
 
+    public int CurrentHealth => health;
+    public bool IsDead => isDead;
+
     private void Start()
     {
         CachePlayerReferences();
@@ -45,11 +48,11 @@ public class AxeZomb : MonoBehaviour
         TryAttackPlayer();
     }
 
-    public void TakeDamage(int damage)
+    public bool TakeDamage(int damage)
     {
         if (isDead)
         {
-            return;
+            return false;
         }
 
         health -= damage;
@@ -77,11 +80,11 @@ public class AxeZomb : MonoBehaviour
 
             // Destroy the zombie after a delay to allow the death animation to play
             Destroy(gameObject, destroyAfterDeathDelay);
+            return true;
         }
-        else
-        {
-            animator.SetTrigger("Hit");
-        }
+
+        animator.SetTrigger("Hit");
+        return false;
     }
 
     public void TryAttackPlayer()
@@ -110,7 +113,7 @@ public class AxeZomb : MonoBehaviour
         }
 
         nextAttackTime = Time.time + attackCooldown;
-        playerHealth.TakeDamage(attackDamage);
+        playerHealth.TakeDamage(attackDamage, transform.position);
     }
 
     private void TryDropAmmoBox()

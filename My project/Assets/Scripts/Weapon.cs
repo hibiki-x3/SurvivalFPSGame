@@ -21,6 +21,12 @@ public class Weapon : MonoBehaviour
     //Spread
     public float spreadIntensity;
 
+    [Header("Gun Feel")]
+    [SerializeField] private float recoilPitchKick = 0.5f;
+    [SerializeField] private float recoilYawKick = 0.08f;
+    [SerializeField] private float recoilRandomYawMultiplier = 1f;
+    [SerializeField] private float emptyMagSoundCooldown = 0.18f;
+
 
     //Bullet
     public GameObject bulletPrefab;
@@ -65,6 +71,7 @@ public class Weapon : MonoBehaviour
 
     private static Material fallbackMuzzleMaterial;
     private static Texture2D fallbackMuzzleTexture;
+    private float nextEmptyMagSoundTime;
 
     private void Awake()
     {
@@ -84,7 +91,11 @@ public class Weapon : MonoBehaviour
             //Empty magazine sound
             if(bulletsLeft == 0 && isShooting)
             {
-                SoundManager.Instance.emptyMagazineSoundM1911.Play();
+                if (Time.time >= nextEmptyMagSoundTime)
+                {
+                    SoundManager.Instance?.emptyMagazineSoundM1911?.Play();
+                    nextEmptyMagSoundTime = Time.time + emptyMagSoundCooldown;
+                }
             }
 
             if(currentShootingMode == ShootingMode.Auto)
@@ -124,8 +135,14 @@ public class Weapon : MonoBehaviour
     {
         bulletsLeft--;
 
-        muzzleEffect.GetComponent<ParticleSystem>().Play();
+        ParticleSystem muzzleParticle = muzzleEffect != null ? muzzleEffect.GetComponent<ParticleSystem>() : null;
+        if (muzzleParticle != null)
+        {
+            muzzleParticle.Play();
+        }
+
         animator.SetTrigger("RECOIL");
+        ApplyRecoilKick();
 
         SoundManager.Instance.PlayShootingSound(thisWeaponModel);
 
@@ -160,6 +177,18 @@ public class Weapon : MonoBehaviour
             burstBulletsLeft--;
             Invoke("FireWeapon", shootingDelay);
         }
+    }
+
+    private void ApplyRecoilKick()
+    {
+        MovementScript movementScript = MovementScript.Instance;
+        if (movementScript == null)
+        {
+            return;
+        }
+
+        float yawNoise = UnityEngine.Random.Range(-recoilYawKick, recoilYawKick) * recoilRandomYawMultiplier;
+        movementScript.ApplyRecoilKick(recoilPitchKick, yawNoise);
     }
 
     private void Reload()

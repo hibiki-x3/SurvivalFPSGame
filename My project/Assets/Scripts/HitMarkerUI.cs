@@ -9,6 +9,9 @@ public class HitMarkerUI : MonoBehaviour
     [SerializeField] private float showDuration = 0.08f;
     [SerializeField] private float fadeDuration = 0.05f;
     [SerializeField] private int fontSize = 11;
+    [SerializeField] private Color normalHitColor = new Color(1f, 1f, 1f, 0.95f);
+    [SerializeField] private Color heavyHitColor = new Color(1f, 0.92f, 0.55f, 1f);
+    [SerializeField] private Color killConfirmColor = new Color(1f, 0.35f, 0.35f, 1f);
 
     private CanvasGroup markerGroup;
     private Text markerText;
@@ -42,11 +45,22 @@ public class HitMarkerUI : MonoBehaviour
 
     public void ShowHitMarker()
     {
+        ShowHitMarker(0, false);
+    }
+
+    public void ShowHitMarker(int damage, bool isKill)
+    {
         EnsureUi();
         if (markerGroup == null)
         {
             return;
         }
+
+        markerText.color = isKill
+            ? killConfirmColor
+            : (damage >= 30 ? heavyHitColor : normalHitColor);
+        markerText.text = isKill ? "X!" : "X";
+        markerText.fontSize = isKill ? fontSize + 3 : fontSize;
 
         if (animationRoutine != null)
         {

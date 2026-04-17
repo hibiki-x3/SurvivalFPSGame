@@ -1,6 +1,7 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
+using System.Collections;
 
 public class HUDManager : MonoBehaviour
 {
@@ -35,6 +36,9 @@ public class HUDManager : MonoBehaviour
     public Sprite greySlot;
 
     private static Sprite runtimeSolidSprite;
+    private Image damageFlashImage;
+    private Text damageDirectionText;
+    private Coroutine damageFlashRoutine;
 
     public int Score { get; private set; }
 
@@ -50,8 +54,19 @@ public class HUDManager : MonoBehaviour
         }
 
         EnsureHealthUI();
+        EnsureDamageFeedbackUI();
 
         UpdateScoreText();
+    }
+
+    private void OnEnable()
+    {
+        PlayerHealth.PlayerDamaged += HandlePlayerDamaged;
+    }
+
+    private void OnDisable()
+    {
+        PlayerHealth.PlayerDamaged -= HandlePlayerDamaged;
     }
 
     private void Start()
@@ -94,10 +109,12 @@ public class HUDManager : MonoBehaviour
     {
         int safeMax = Mathf.Max(1, maxHealth);
         int safeCurrent = Mathf.Clamp(currentHealth, 0, safeMax);
+        float healthRatio = safeCurrent / (float)safeMax;
 
         if (healthFillImage != null)
         {
-            healthFillImage.fillAmount = safeCurrent / (float)safeMax;
+            healthFillImage.fillAmount = healthRatio;
+            healthFillImage.color = Color.Lerp(new Color(0.82f, 0.18f, 0.18f, 1f), new Color(0.09f, 0.81f, 0.25f, 1f), healthRatio);
         }
 
         if (healthValueText != null)
@@ -267,6 +284,162 @@ public class HUDManager : MonoBehaviour
         {
             healthValueText = valueTextTransform.GetComponent<Text>();
         }
+    }
+
+    private void EnsureDamageFeedbackUI()
+    {
+        if (damageFlashImage != null && damageDirectionText != null)
+        {
+            return;
+        }
+
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            return;
+        }
+
+        Transform existingFlash = canvas.transform.Find("DamageFlash");
+        if (existingFlash == null)
+        {
+            GameObject flashObject = new GameObject("DamageFlash", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            flashObject.transform.SetParent(canvas.transform, false);
+
+            RectTransform flashRect = flashObject.GetComponent<RectTransform>();
+            flashRect.anchorMin = Vector2.zero;
+            flashRect.anchorMax = Vector2.one;
+            flashRect.offsetMin = Vector2.zero;
+            flashRect.offsetMax = Vector2.zero;
+
+            damageFlashImage = flashObject.GetComponent<Image>();
+            damageFlashImage.sprite = GetRuntimeSolidSprite();
+            damageFlashImage.color = new Color(0.9f, 0.1f, 0.1f, 0f);
+            damageFlashImage.raycastTarget = false;
+        }
+        else
+        {
+            damageFlashImage = existingFlash.GetComponent<Image>();
+        }
+
+        Transform existingDirection = canvas.transform.Find("DamageDirection");
+        if (existingDirection == null)
+        {
+            GameObject directionObject = new GameObject("DamageDirection", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+            directionObject.transform.SetParent(canvas.transform, false);
+
+            RectTransform dirRect = directionObject.GetComponent<RectTransform>();
+            dirRect.anchorMin = new Vector2(0.5f, 0.5f);
+            dirRect.anchorMax = new Vector2(0.5f, 0.5f);
+            dirRect.pivot = new Vector2(0.5f, 0.5f);
+            dirRect.anchoredPosition = new Vector2(0f, 36f);
+            dirRect.sizeDelta = new Vector2(120f, 36f);
+
+            damageDirectionText = directionObject.GetComponent<Text>();
+            damageDirectionText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            damageDirectionText.alignment = TextAnchor.MiddleCenter;
+            damageDirectionText.fontSize = 26;
+            damageDirectionText.color = new Color(1f, 0.4f, 0.4f, 0f);
+            damageDirectionText.text = "";
+        }
+        else
+        {
+            damageDirectionText = existingDirection.GetComponent<Text>();
+        }
+    }
+
+    private void HandlePlayerDamaged(float normalizedDamage, Vector3 sourcePosition, bool hasSource)
+    {
+        EnsureDamageFeedbackUI();
+        if (damageFlashImage == null)
+        {
+            return;
+        }
+
+        if (damageFlashRoutine != null)
+        {
+            StopCoroutine(damageFlashRoutine);
+        }
+
+        damageFlashRoutine = StartCoroutine(AnimateDamageFeedback(normalizedDamage, sourcePosition, hasSource));
+    }
+
+    private IEnumerator AnimateDamageFeedback(float normalizedDamage, Vector3 sourcePosition, bool hasSource)
+    {
+        float flashStrength = Mathf.Clamp01(0.2f + normalizedDamage * 0.8f);
+        Color flashColor = damageFlashImage.color;
+        flashColor.a = 0.38f * flashStrength;
+        damageFlashImage.color = flashColor;
+
+        if (damageDirectionText != null)
+        {
+            damageDirectionText.text = ResolveDamageDirection(sourcePosition, hasSource);
+            Color dirColor = damageDirectionText.color;
+            dirColor.a = 0.95f;
+            damageDirectionText.color = dirColor;
+        }
+
+        float timer = 0f;
+        const float fadeTime = 0.35f;
+        Color startFlash = damageFlashImage.color;
+        Color startDirection = damageDirectionText != null ? damageDirectionText.color : Color.clear;
+
+        while (timer < fadeTime)
+        {
+            timer += Time.unscaledDeltaTime;
+            float t = timer / fadeTime;
+
+            Color fadeFlash = startFlash;
+            fadeFlash.a = Mathf.Lerp(startFlash.a, 0f, t);
+            damageFlashImage.color = fadeFlash;
+
+            if (damageDirectionText != null)
+            {
+                Color fadeDir = startDirection;
+                fadeDir.a = Mathf.Lerp(startDirection.a, 0f, t);
+                damageDirectionText.color = fadeDir;
+            }
+
+            yield return null;
+        }
+
+        Color doneFlash = damageFlashImage.color;
+        doneFlash.a = 0f;
+        damageFlashImage.color = doneFlash;
+
+        if (damageDirectionText != null)
+        {
+            Color doneDir = damageDirectionText.color;
+            doneDir.a = 0f;
+            damageDirectionText.color = doneDir;
+            damageDirectionText.text = string.Empty;
+        }
+
+        damageFlashRoutine = null;
+    }
+
+    private string ResolveDamageDirection(Vector3 sourcePosition, bool hasSource)
+    {
+        if (!hasSource || Camera.main == null)
+        {
+            return "!";
+        }
+
+        Vector3 toSource = sourcePosition - Camera.main.transform.position;
+        toSource.y = 0f;
+        if (toSource.sqrMagnitude < 0.01f)
+        {
+            return "!";
+        }
+
+        toSource.Normalize();
+        float signedAngle = Vector3.SignedAngle(Camera.main.transform.forward, toSource, Vector3.up);
+
+        if (Mathf.Abs(signedAngle) <= 35f)
+        {
+            return "^";
+        }
+
+        return signedAngle > 0f ? ">" : "<";
     }
 
     private Transform CreateHealthBarRoot(Transform parent)

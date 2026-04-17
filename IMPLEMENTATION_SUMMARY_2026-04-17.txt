@@ -1,0 +1,100 @@
+IMPLEMENTATION WRITE-UP
+SurvivalFPSGame - Phase 1 Gunplay and Combat Feedback
+Date: 2026-04-17
+
+1. Executive Summary
+
+Trong dot implementation nay, he thong chien dau duoc nang cap theo huong arcade ro net hon, tap trung vao "cam giac ban" va "phan hoi khi giao tranh". Cac thay doi da duoc trien khai tren 7 script chinh va tao ra 3 nhom cai thien lon:
+
+- Gun feel tot hon nho recoil camera co hoi phuc mem.
+- Hit confirmation ro hon nho phan tang marker theo sat thuong va kill confirm.
+- Player damage awareness cao hon nho flash man hinh va huong sat thuong.
+
+2. Scope and Goals
+
+Phan viec thuoc Phase 1 cua roadmap, voi muc tieu cu the:
+
+- Tang do "punch" khi ban de moi phat dan co trong luong.
+- Giam hien tuong feedback lap vo nghia (nhat la am thanh het dan spam).
+- Cung cap thong tin truc quan cho nguoi choi khi nhan sat thuong.
+- Giu kien truc code hien co, uu tien thay doi nho, de rollback va tune nhanh.
+
+3. Files Updated
+
+- My project/Assets/Scripts/Weapon.cs
+- My project/Assets/Scripts/MouseMovement.cs
+- My project/Assets/Scripts/HitMarkerUI.cs
+- My project/Assets/Scripts/Bullet.cs
+- My project/Assets/Scripts/AxeZomb.cs
+- My project/Assets/Scripts/PlayerHealth.cs
+- My project/Assets/Scripts/HUDManager.cs
+
+4. Technical Changes by System
+
+4.1 Weapon firing and recoil pipeline
+
+Weapon.cs duoc mo rong voi bo tham so gun feel moi: recoilPitchKick, recoilYawKick, recoilRandomYawMultiplier, emptyMagSoundCooldown. Khi FireWeapon() duoc goi, script se kick camera thong qua MovementScript.ApplyRecoilKick(). Goc yaw co nhieu ngau nhien nhe de tranh cam giac pattern qua may moc.
+
+Ngoai ra, logic am thanh het dan da duoc debounce bang bien nextEmptyMagSoundTime. Dieu nay loai bo hien tuong lap am thanh lien tuc khi nguoi choi giu chuot trong luc bang dan rong.
+
+4.2 Camera response and recovery
+
+MovementScript (trong MouseMovement.cs) duoc nang cap thanh diem tiep nhan recoil trung tam thong qua singleton Instance. Script now duy tri recoilOffset va tu dong keo ve 0 voi recoilRecoverySpeed moi frame. Ket qua la camera co do giat luc ban va hoi tam mem sau do, tao cam giac FPS tot hon ma khong gay choang qua muc.
+
+4.3 Hit marker expressiveness
+
+HitMarkerUI duoc mo rong API de nhan damage va kill state. He thong marker hien tai ho tro 3 cap:
+
+- Hit thuong: marker mau trang.
+- Hit nang: marker mau vang.
+- Kill confirm: marker "X!" mau do, co emphasis ve size.
+
+Kieu hien thi nay giup nguoi choi biet ngay hieu qua phat ban ma khong can doi animation enemy.
+
+4.4 Bullet to enemy damage flow
+
+Bullet.cs da duoc sua de lay gia tri bool tra ve tu AxeZomb.TakeDamage(). Nhung noi goi trung lap damage da bi loai bo, tranh tru sat thuong 2 lan tren cung mot lan va cham. Sau khi nhan ket qua isKill, bullet script truyen thong tin nay sang HitMarkerUI de hien thi dung loai marker.
+
+4.5 Enemy damage contract
+
+AxeZomb.cs chuyen TakeDamage tu void sang bool, cho phep cac he thong goi (nhu Bullet) biet duoc enemy vua chet hay chua chet. Script cung bo sung CurrentHealth va IsDead de de dang mo rong cho UI/AI logic ve sau.
+
+Trong melee attack, AxeZomb now truyen them vi tri tan cong vao PlayerHealth.TakeDamage(..., sourcePosition), la du lieu can thiet cho indicator huong sat thuong.
+
+4.6 Player health event model
+
+PlayerHealth.cs bo sung event PlayerDamaged(float normalizedDamage, Vector3 sourcePosition, bool hasSource). Event nay duoc phat ngay sau khi HP bi tru va duoc dung boi HUD de render feedback theo cuong do sat thuong.
+
+De giu backward compatibility, script van giu TakeDamage(int damage) va bo sung overload TakeDamage(int damage, Vector3 sourcePosition), ca hai deu di qua TakeDamageInternal() thong nhat.
+
+4.7 HUD combat feedback layer
+
+HUDManager.cs la noi nhan event PlayerDamaged va hien thi feedback runtime moi:
+
+- DamageFlash: lop overlay do toan man, alpha phu thuoc normalizedDamage.
+- DamageDirection: ky hieu huong sat thuong (^, <, >, !).
+- Mau thanh HP doi dong tu xanh sang do theo health ratio.
+
+Feedback duoc animate bang coroutine AnimateDamageFeedback() voi fade out ngan, dam bao du ro de thay nhung khong che HUD qua lau.
+
+5. Gameplay Impact
+
+Sau thay doi, trai nghiem combat duoc nang cap o 3 diem:
+
+- Gunfeel: ban co trong luong hon nho camera kick va recovery.
+- Clarity: nguoi choi phan biet duoc hit nang va kill confirm ngay lap tuc.
+- Survivability awareness: phan hoi sat thuong vao player ro rang, de ra quyet dinh lui/tranh va doi huong.
+
+6. Validation Status
+
+Da thuc hien kiem tra loi script tren cac file da sua. Ket qua: khong ghi nhan compile error trong batch thay doi.
+
+Luu y: dot nay chua bao gom playtest runtime trong Unity Editor, nen can chay play session de tune tiep cac tham so recoil/flash cho cam giac toi uu.
+
+7. Recommended Next Steps
+
+- Thiet lap profile recoil/spread rieng cho tung sung (M1911, M16, Uzi, M249).
+- Bo sung kill feed va kill streak nhe tren HUD de tang dopamine loop.
+- Dong goi profile can bang Arcade Casual / Arcade Standard de test nhanh va so sanh metric.
+
+End of write-up.
