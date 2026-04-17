@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelMenuRuntime : MonoBehaviour
 {
-    private const string LevelSceneName = "Level";
+    private static readonly string[] GameplaySceneNames = { "Level", "map" };
 
     private GameMenuController gameMenuController;
 
@@ -21,7 +22,7 @@ public class LevelMenuRuntime : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
     {
-        if (SceneManager.GetActiveScene().name != LevelSceneName)
+        if (!IsGameplayScene(SceneManager.GetActiveScene().name))
         {
             return;
         }
@@ -37,7 +38,7 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void Awake()
     {
-        if (SceneManager.GetActiveScene().name != LevelSceneName)
+        if (!IsGameplayScene(SceneManager.GetActiveScene().name))
         {
             Destroy(gameObject);
             return;
@@ -70,7 +71,7 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void Update()
     {
-        if (SceneManager.GetActiveScene().name != LevelSceneName)
+        if (!IsGameplayScene(SceneManager.GetActiveScene().name))
         {
             showPauseMenu = false;
             showStartMenu = false;
@@ -258,7 +259,7 @@ public class LevelMenuRuntime : MonoBehaviour
 
     private void HandlePlayerDied()
     {
-        if (SceneManager.GetActiveScene().name != LevelSceneName)
+        if (!IsGameplayScene(SceneManager.GetActiveScene().name))
         {
             return;
         }
@@ -318,5 +319,23 @@ public class LevelMenuRuntime : MonoBehaviour
             overlayTexture.SetPixel(0, 0, Color.white);
             overlayTexture.Apply();
         }
+    }
+
+    private static bool IsGameplayScene(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < GameplaySceneNames.Length; i++)
+        {
+            if (string.Equals(sceneName, GameplaySceneNames[i], StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

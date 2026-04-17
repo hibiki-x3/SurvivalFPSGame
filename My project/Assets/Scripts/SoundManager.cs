@@ -24,8 +24,12 @@ public class SoundManager : MonoBehaviour
 
     public AudioClip AxeZombHit;
     [Range(0f, 2f)] public float AxeZombHitVolume = 1.75f;
+    public AudioClip hitTickSound;
+    [Range(0f, 2f)] public float hitTickVolume = 0.35f;
 
     public AudioSource emptyMagazineSoundM1911;
+
+    private AudioClip fallbackHitTickClip;
 
     private void Awake()
     {
@@ -85,6 +89,48 @@ public class SoundManager : MonoBehaviour
         }
 
         ShootingChannel.PlayOneShot(AxeZombHit, AxeZombHitVolume);
+    }
+
+    public void PlayHitTickSound()
+    {
+        if (ShootingChannel == null)
+        {
+            return;
+        }
+
+        AudioClip clipToPlay = hitTickSound != null ? hitTickSound : GetFallbackHitTickClip();
+        if (clipToPlay == null)
+        {
+            return;
+        }
+
+        ShootingChannel.PlayOneShot(clipToPlay, hitTickVolume);
+    }
+
+    private AudioClip GetFallbackHitTickClip()
+    {
+        if (fallbackHitTickClip != null)
+        {
+            return fallbackHitTickClip;
+        }
+
+        const int sampleRate = 44100;
+        const float durationSeconds = 0.03f;
+        int sampleCount = Mathf.CeilToInt(sampleRate * durationSeconds);
+        float[] samples = new float[sampleCount];
+
+        for (int i = 0; i < sampleCount; i++)
+        {
+            float time = i / (float)sampleRate;
+            float envelope = Mathf.Exp(-time * 90f);
+            float noise = Random.Range(-1f, 1f) * 0.15f;
+            float click = Mathf.Sin(2f * Mathf.PI * 1800f * time) * 0.55f;
+            samples[i] = (click + noise) * envelope;
+        }
+
+        fallbackHitTickClip = AudioClip.Create("FallbackHitTick", sampleCount, 1, sampleRate, false);
+        fallbackHitTickClip.SetData(samples, 0);
+        return fallbackHitTickClip;
     }
 
 }

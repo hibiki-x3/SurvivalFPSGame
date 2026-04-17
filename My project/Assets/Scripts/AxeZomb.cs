@@ -6,6 +6,11 @@ public class AxeZomb : MonoBehaviour
     [SerializeField] private float speed = 3f;
     [SerializeField] private int health = 100;
     [SerializeField] private float destroyAfterDeathDelay = 5f;
+    [Header("Drop")]
+    [SerializeField] private GameObject ammoBoxDropPrefab;
+    [SerializeField, Range(0f, 1f)] private float ammoBoxDropChance = 0.05f;
+    [SerializeField] private float ammoBoxUpwardImpulse = 4.5f;
+    [SerializeField] private float ammoBoxHorizontalImpulse = 2.5f;
     [Header("Melee Attack")]
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackCooldown = 1f;
@@ -68,6 +73,7 @@ public class AxeZomb : MonoBehaviour
             zombieCollider.enabled = false;
 
             HUDManager.Instance?.AddScore(10);
+            TryDropAmmoBox();
 
             // Destroy the zombie after a delay to allow the death animation to play
             Destroy(gameObject, destroyAfterDeathDelay);
@@ -105,6 +111,35 @@ public class AxeZomb : MonoBehaviour
 
         nextAttackTime = Time.time + attackCooldown;
         playerHealth.TakeDamage(attackDamage);
+    }
+
+    private void TryDropAmmoBox()
+    {
+        if (ammoBoxDropPrefab == null)
+        {
+            return;
+        }
+
+        if (Random.value > ammoBoxDropChance)
+        {
+            return;
+        }
+
+        Vector3 dropPosition = transform.position + Vector3.up * 0.5f;
+        GameObject droppedAmmoBox = Instantiate(ammoBoxDropPrefab, dropPosition, Quaternion.identity);
+
+        Rigidbody dropRb = droppedAmmoBox.GetComponent<Rigidbody>();
+        if (dropRb == null)
+        {
+            dropRb = droppedAmmoBox.GetComponentInChildren<Rigidbody>();
+        }
+
+        if (dropRb != null)
+        {
+            Vector2 randomPlanar = Random.insideUnitCircle.normalized * ammoBoxHorizontalImpulse;
+            Vector3 launchForce = new Vector3(randomPlanar.x, ammoBoxUpwardImpulse, randomPlanar.y);
+            dropRb.AddForce(launchForce, ForceMode.Impulse);
+        }
     }
 
     private void CachePlayerReferences()

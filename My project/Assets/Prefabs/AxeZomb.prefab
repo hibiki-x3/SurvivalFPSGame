@@ -1805,6 +1805,10 @@ MonoBehaviour:
   speed: 2.5
   health: 100
   destroyAfterDeathDelay: 5
+  ammoBoxDropPrefab: {fileID: 0}
+  ammoBoxDropChance: 0.05
+  ammoBoxUpwardImpulse: 4.5
+  ammoBoxHorizontalImpulse: 2.5
   attackDamage: 10
   attackCooldown: 1
   attackRange: 2.4
