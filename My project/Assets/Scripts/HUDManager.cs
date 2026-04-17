@@ -49,6 +49,11 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private float killFeedDuration = 1.2f;
 
     public int Score { get; private set; }
+    public int TotalKills { get; private set; }
+    public int CurrentKillStreak => currentKillStreak;
+    public int BestKillStreak { get; private set; }
+
+    public static event System.Action<int, int> KillRegistered;
 
     private void Awake()
     {
@@ -96,6 +101,7 @@ public class HUDManager : MonoBehaviour
     public void RegisterKill(int points)
     {
         AddScore(points);
+        TotalKills++;
 
         if (Time.time <= lastKillTime + streakWindowSeconds)
         {
@@ -107,6 +113,8 @@ public class HUDManager : MonoBehaviour
         }
 
         lastKillTime = Time.time;
+        BestKillStreak = Mathf.Max(BestKillStreak, currentKillStreak);
+        KillRegistered?.Invoke(TotalKills, currentKillStreak);
         ShowKillFeed(currentKillStreak);
     }
 

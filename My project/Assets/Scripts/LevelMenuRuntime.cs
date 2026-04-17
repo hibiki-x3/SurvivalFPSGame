@@ -16,6 +16,7 @@ public class LevelMenuRuntime : MonoBehaviour
     private GUIStyle titleStyle;
     private GUIStyle buttonStyle;
     private GUIStyle subtitleStyle;
+    private GUIStyle summaryStyle;
 
     private static Texture2D overlayTexture;
 
@@ -138,6 +139,16 @@ public class LevelMenuRuntime : MonoBehaviour
                 : (showStartMenu ? "Prepare and begin when ready." : "Select an action."),
             subtitleStyle
         );
+
+        if (showGameOverMenu)
+        {
+            string summaryText = BuildGameOverSummaryText();
+            GUI.Label(
+                new Rect(menuRect.x + 24f, menuRect.y + 84f, menuRect.width - 48f, 132f),
+                summaryText,
+                summaryStyle
+            );
+        }
     }
 
     private void DrawMenuWindow(int windowId)
@@ -150,6 +161,8 @@ public class LevelMenuRuntime : MonoBehaviour
 
         if (showGameOverMenu)
         {
+            y = 226f;
+
             if (GUI.Button(new Rect(x, y, width, height), "Retry Level", buttonStyle))
             {
                 Time.timeScale = 1f;
@@ -313,6 +326,17 @@ public class LevelMenuRuntime : MonoBehaviour
             };
         }
 
+        if (summaryStyle == null)
+        {
+            summaryStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.UpperLeft,
+                fontSize = 16,
+                fontStyle = FontStyle.Normal,
+                normal = { textColor = new Color(0.93f, 0.95f, 0.98f, 0.96f) }
+            };
+        }
+
         if (overlayTexture == null)
         {
             overlayTexture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
@@ -337,5 +361,27 @@ public class LevelMenuRuntime : MonoBehaviour
         }
 
         return false;
+    }
+
+    private string BuildGameOverSummaryText()
+    {
+        RunObjectiveManager objectiveManager = RunObjectiveManager.Instance;
+        if (objectiveManager != null && objectiveManager.IsRunFinished)
+        {
+            return objectiveManager.LastRunSummary;
+        }
+
+        if (objectiveManager != null)
+        {
+            return objectiveManager.BuildPostRunSummary();
+        }
+
+        int score = HUDManager.Instance != null ? HUDManager.Instance.Score : 0;
+        float elapsed = Timer.Instance != null ? Timer.Instance.ElapsedTime : 0f;
+        int minutes = Mathf.FloorToInt(elapsed / 60f);
+        int seconds = Mathf.FloorToInt(elapsed % 60f);
+        return "RUN SUMMARY\n"
+            + "Time Survived: " + string.Format("{0:00}:{1:00}", minutes, seconds) + "\n"
+            + "Score: " + score;
     }
 }
