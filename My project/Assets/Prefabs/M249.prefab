@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 557246506279945688}
   - component: {fileID: 8326379354520545774}
   - component: {fileID: 3590484315353706385}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: M249
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,6 +119,11 @@ MonoBehaviour:
   bulletsPerBurst: 1
   burstBulletsLeft: 0
   spreadIntensity: 0.3
+  recoilPitchKick: 0.5
+  recoilYawKick: 0.08
+  recoilRandomYawMultiplier: 1
+  emptyMagSoundCooldown: 0.18
+  useRuntimeWeaponProfile: 1
   bulletPrefab: {fileID: 7902926656775076990, guid: 21a008c3323a6524c94846b6001bed91, type: 3}
   bulletSpawn: {fileID: 4261271758324664629}
   bulletVelocity: 800
@@ -206,7 +211,7 @@ GameObject:
   - component: {fileID: 4595658747544337432}
   - component: {fileID: 5313079603232835138}
   - component: {fileID: 5272568953429521286}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Magazin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +301,7 @@ GameObject:
   - component: {fileID: 7331455088230184957}
   - component: {fileID: 8672864322153962142}
   - component: {fileID: 7094965476020727150}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Slide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386,7 +391,7 @@ GameObject:
   - component: {fileID: 5493908113655143971}
   - component: {fileID: 1606821740028949052}
   - component: {fileID: 5264224520308112203}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Bolt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -474,7 +479,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4261271758324664629}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: BulletSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -508,7 +513,7 @@ GameObject:
   - component: {fileID: 7640216866001406897}
   - component: {fileID: 6084186919359391521}
   - component: {fileID: 6748968519936787675}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -598,7 +603,7 @@ GameObject:
   - component: {fileID: 6081411231438514643}
   - component: {fileID: 133160467493724981}
   - component: {fileID: 2562843712875565399}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: MuzzleFlashEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
