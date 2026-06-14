@@ -2,60 +2,128 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-
     private CharacterController controller;
 
+    [Header("Movement")]
     public float speed = 12f;
     public float gravity = -9.81f * 2;
     public float jumpHeight = 3f;
 
+    [Header("Sprint")]
+    public float sprintSpeed = 20f;
+    public float sprintFOV = 75f;
+    public float normalFOV = 60f;
+    public float fovTransitionSpeed = 8f;
+
+    [Header("Stamina")]
+    public float maxStamina = 100f;
+    public float staminaDrainRate = 25f;   // per second while sprinting
+    public float staminaRegenRate = 15f;   // per second while not sprinting
+    public float staminaRegenDelay = 1.5f; // seconds before regen starts
+
+    [Header("Ground")]
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
 
-    Vector3 velocity;
+    // ── Public read-only state ──────────────────────────────────────
+    public float CurrentStamina  => currentStamina;
+    public float MaxStamina      => maxStamina;
+    public bool  IsSprinting     => isSprinting;
 
-    bool isGrounded;
+    // ── Private state ───────────────────────────────────────────────
+    private Vector3 velocity;
+    private bool    isGrounded;
+    private bool    isSprinting;
+    private float   currentStamina;
+    private float   regenDelayTimer;
 
+    // ── Cache ───────────────────────────────────────────────────────
+    private Camera playerCamera;
 
     void Start()
     {
-        controller = GetComponent<CharacterController>();
+        controller     = GetComponent<CharacterController>();
+        currentStamina = maxStamina;
+
+        // Try to find the main camera (child of the player or scene-wide)
+        playerCamera = Camera.main;
+        if (playerCamera != null)
+        {
+            playerCamera.fieldOfView = normalFOV;
+        }
     }
 
     void Update()
     {
-        //Ground check
+        // ── Ground check ─────────────────────────────────────────────
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
-        //Resetting the default velocity
-        if(isGrounded && velocity.y < 0)
+        if (isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
         }
 
-        //Getting the inputs
+        // ── Movement inputs ──────────────────────────────────────────
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        //Creating the moving vector
-        Vector3 move = transform.right * x + transform.forward * z; //(right - red axis, forward - blue axis)
+        // ── Sprint logic ─────────────────────────────────────────────
+        bool wantsToSprint = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        bool isMovingForward = z > 0.1f; // only sprint when moving forward
 
-        //Actually moving the player
-        controller.Move(move * speed * Time.deltaTime);
-
-        //Check if player can jump
-        if(Input.GetButtonDown("Jump") && isGrounded)
+        if (wantsToSprint && isMovingForward && currentStamina > 0f)
         {
-            //Actually jumping
+            isSprinting = true;
+            currentStamina -= staminaDrainRate * Time.deltaTime;
+            currentStamina  = Mathf.Max(currentStamina, 0f);
+            regenDelayTimer = staminaRegenDelay; // reset regen delay
+        }
+        else
+        {
+            isSprinting = false;
+
+            // Regen after delay
+            if (regenDelayTimer > 0f)
+            {
+                regenDelayTimer -= Time.deltaTime;
+            }
+            else
+            {
+                currentStamina += staminaRegenRate * Time.deltaTime;
+                currentStamina  = Mathf.Min(currentStamina, maxStamina);
+            }
+        }
+
+        // ── Apply movement ───────────────────────────────────────────
+        float currentSpeed = isSprinting ? sprintSpeed : speed;
+        Vector3 move = transform.right * x + transform.forward * z;
+        controller.Move(move * currentSpeed * Time.deltaTime);
+
+        // ── Jump ─────────────────────────────────────────────────────
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-        //Falling down
         velocity.y += gravity * Time.deltaTime;
-
-        //Executing the jump
         controller.Move(velocity * Time.deltaTime);
 
+        // ── FOV kick ─────────────────────────────────────────────────
+        if (playerCamera != null)
+        {
+            float targetFOV = isSprinting ? sprintFOV : normalFOV;
+            playerCamera.fieldOfView = Mathf.Lerp(
+                playerCamera.fieldOfView,
+                targetFOV,
+                fovTransitionSpeed * Time.deltaTime
+            );
+        }
+
+        // ── Notify HUD ───────────────────────────────────────────────
+        if (HUDManager.Instance != null)
+        {
+            HUDManager.Instance.SetStamina(currentStamina, maxStamina);
+        }
     }
 }

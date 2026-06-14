@@ -32,6 +32,10 @@ public class HUDManager : MonoBehaviour
     public Image healthFillImage;
     public Text healthValueText;
 
+    [Header("Stamina")]
+    public Image staminaFillImage;
+    public Text staminaValueText;
+
     public Sprite emptySlot;
     public Sprite greySlot;
 
@@ -67,6 +71,7 @@ public class HUDManager : MonoBehaviour
         }
 
         EnsureHealthUI();
+        EnsureStaminaUI();
         EnsureDamageFeedbackUI();
         EnsureKillFeedUI();
 
@@ -156,6 +161,115 @@ public class HUDManager : MonoBehaviour
             healthValueText.text = $"HP {safeCurrent}/{safeMax}";
         }
     }
+
+    // ─── Stamina ────────────────────────────────────────────────────────────────
+
+    public void SetStamina(float currentStamina, float maxStamina)
+    {
+        EnsureStaminaUI();
+        float safeMax   = Mathf.Max(1f, maxStamina);
+        float ratio     = Mathf.Clamp01(currentStamina / safeMax);
+
+        if (staminaFillImage != null)
+        {
+            staminaFillImage.fillAmount = ratio;
+            // Yellow when full, orange when low
+            staminaFillImage.color = Color.Lerp(
+                new Color(0.95f, 0.45f, 0.10f, 1f),
+                new Color(0.98f, 0.88f, 0.10f, 1f),
+                ratio
+            );
+        }
+
+        if (staminaValueText != null)
+        {
+            staminaValueText.text = $"SP {Mathf.CeilToInt(currentStamina)}/{Mathf.CeilToInt(safeMax)}";
+        }
+    }
+
+    private void EnsureStaminaUI()
+    {
+        if (staminaFillImage != null && staminaValueText != null)
+        {
+            return;
+        }
+
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null) return;
+
+        Transform existing = canvas.transform.Find("StaminaBar");
+        if (existing == null)
+        {
+            existing = CreateStaminaBarRoot(canvas.transform);
+        }
+
+        if (existing == null) return;
+
+        Transform fillT = existing.Find("Fill");
+        if (fillT != null) staminaFillImage = fillT.GetComponent<Image>();
+
+        Transform valueT = existing.Find("Value");
+        if (valueT != null) staminaValueText = valueT.GetComponent<Text>();
+    }
+
+    private Transform CreateStaminaBarRoot(Transform parent)
+    {
+        Sprite solid = GetRuntimeSolidSprite();
+
+        GameObject root = new GameObject("StaminaBar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        root.transform.SetParent(parent, false);
+
+        RectTransform rootRect = root.GetComponent<RectTransform>();
+        // Place it just above the HP bar (HP bar is at y=20, height=16 → stamina bar at y=42)
+        rootRect.anchorMin = new Vector2(0f, 0f);
+        rootRect.anchorMax = new Vector2(0f, 0f);
+        rootRect.pivot     = new Vector2(0f, 0f);
+        rootRect.anchoredPosition = new Vector2(20f, 42f);
+        rootRect.sizeDelta = new Vector2(180f, 12f);
+
+        Image rootImage = root.GetComponent<Image>();
+        rootImage.sprite = solid;
+        rootImage.color  = new Color(0f, 0f, 0f, 0.65f);
+
+        // Fill bar
+        GameObject fill = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        fill.transform.SetParent(root.transform, false);
+        RectTransform fillRect = fill.GetComponent<RectTransform>();
+        fillRect.anchorMin = Vector2.zero;
+        fillRect.anchorMax = Vector2.one;
+        fillRect.offsetMin = new Vector2(2f, 2f);
+        fillRect.offsetMax = new Vector2(-2f, -2f);
+
+        Image fillImage = fill.GetComponent<Image>();
+        fillImage.sprite     = solid;
+        fillImage.type       = Image.Type.Filled;
+        fillImage.fillMethod = Image.FillMethod.Horizontal;
+        fillImage.fillOrigin = 0;
+        fillImage.fillAmount = 1f;
+        fillImage.color      = new Color(0.98f, 0.88f, 0.10f, 1f);
+        staminaFillImage     = fillImage;
+
+        // Label text
+        GameObject value = new GameObject("Value", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+        value.transform.SetParent(root.transform, false);
+        RectTransform valueRect = value.GetComponent<RectTransform>();
+        valueRect.anchorMin = Vector2.zero;
+        valueRect.anchorMax = Vector2.one;
+        valueRect.offsetMin = Vector2.zero;
+        valueRect.offsetMax = Vector2.zero;
+
+        Text valueText       = value.GetComponent<Text>();
+        valueText.font       = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        valueText.alignment  = TextAnchor.MiddleCenter;
+        valueText.fontSize   = 11;
+        valueText.color      = new Color(0.94f, 0.98f, 0.94f, 1f);
+        valueText.text       = "SP 100/100";
+        staminaValueText     = valueText;
+
+        return root.transform;
+    }
+
+    // ─── End Stamina ────────────────────────────────────────────────────────────
 
     private void Update()
 {
