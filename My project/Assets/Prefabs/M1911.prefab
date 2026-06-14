@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7310225276291032219}
   - component: {fileID: 438229752410961614}
   - component: {fileID: 3341800439291855072}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: M1911
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 6944644490428776460}
   - component: {fileID: 34099053945093416}
   - component: {fileID: 5745053129178615674}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Magazin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 6014179558093347263}
   - component: {fileID: 3789144115799028676}
   - component: {fileID: 442877285871650769}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Hammer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285,7 +285,7 @@ GameObject:
   - component: {fileID: 917861637779825529}
   - component: {fileID: 8965395766226973260}
   - component: {fileID: 3988739214918544471}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Slide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -373,7 +373,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6131068892802980787}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: BulletSpawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -407,7 +407,7 @@ GameObject:
   - component: {fileID: 2525440404880686024}
   - component: {fileID: 2169735751901889810}
   - component: {fileID: 7964883468937060338}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -497,7 +497,7 @@ GameObject:
   - component: {fileID: 2245798570896070707}
   - component: {fileID: 2269002978651376109}
   - component: {fileID: 3629424714213449332}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: MuzzleFlashEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5288,7 +5288,7 @@ GameObject:
   - component: {fileID: 3420581562901104699}
   - component: {fileID: 7958730174708660746}
   - component: {fileID: 6044581919279700013}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: M1911
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5303,7 +5303,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9066433493012745405}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0.7071068, z: -0, w: 0}
+  m_LocalRotation: {x: 0.7071068, y: 0.7071068, z: 0, w: 0}
   m_LocalPosition: {x: 24.07, y: 2.95, z: 6.36}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 0
@@ -5332,6 +5332,11 @@ MonoBehaviour:
   bulletsPerBurst: 1
   burstBulletsLeft: 0
   spreadIntensity: 0.05
+  recoilPitchKick: 0.5
+  recoilYawKick: 0.08
+  recoilRandomYawMultiplier: 1
+  emptyMagSoundCooldown: 0.18
+  useRuntimeWeaponProfile: 1
   bulletPrefab: {fileID: 7902926656775076990, guid: 21a008c3323a6524c94846b6001bed91, type: 3}
   bulletSpawn: {fileID: 6131068892802980787}
   bulletVelocity: 500
